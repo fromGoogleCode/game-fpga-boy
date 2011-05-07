@@ -119,8 +119,7 @@ class Dmgcpu {
 	boolean terminate;
 	boolean running = false;
 
-	boolean gbcFeatures = true;
-	boolean allowGbcFeatures = true;
+	boolean gbcFeatures = false;
 	int gbcRamBank = 1;
 
 	/** Create a CPU emulator with the supplied cartridge and game link objects.  Both can be set up
@@ -129,11 +128,13 @@ class Dmgcpu {
 	public Dmgcpu(Cartridge c, Component a) {
 		cartridge = c;
 		graphicsChip = new TileBasedGraphicsChip(a, this);
-		if ( ((cartridge.rom[0x143] & 0x80) == 0x80) && (allowGbcFeatures)) { // GBC Cartridge ID
-			gbcFeatures = true;
-		} else {
-			gbcFeatures = false;
-		}
+		//if ( (cartridge.rom[0x143] & 0x80) == 0x80) {
+		//	gbcFeatures = true;
+		//	System.out.println("GameBoy Color features are ON");
+		//} else {
+		//	gbcFeatures = false;
+		//	System.out.println("GameBoy Color features are OFF");
+		//}
 		ioHandler = new IoHandler(this);
 		applet = a;
 	}
@@ -178,6 +179,7 @@ class Dmgcpu {
 			return (mainRam[addr - 0xC000]);
 
 		case 0xD000 :
+			//return (mainRam[addr - 0xE000]);
 			return (mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)]);
 
 		case 0xE000 :
@@ -232,6 +234,7 @@ class Dmgcpu {
 
 		case 0xD000 :
 			mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)] = (byte) data;
+			//mainRam[addr - 0xE000] = (byte) data;
 			break;
 
 		case 0xE000 :
@@ -297,10 +300,12 @@ class Dmgcpu {
 	/** Resets the CPU to it's power on state.  Memory contents are not cleared. */
 	public void reset() {
 
-		if ( ((cartridge.rom[0x143] & 0x80) == 0x80) && (allowGbcFeatures)) { // GBC Cartridge ID
+		if ( (cartridge.rom[0x143] & 0x80) == 0x80) { // GBC Cartridge ID
 			gbcFeatures = true;
+			System.out.println("GameBoy Color features are ON");
 		} else {
 			gbcFeatures = false;
+			System.out.println("GameBoy Color features are OFF");
 		}
 		setDoubleSpeedCpu(false);
 		graphicsChip.dispose();
@@ -308,8 +313,11 @@ class Dmgcpu {
 		interruptsEnabled = false;
 		ieDelay = -1;
 		pc = 0x0100;
+		//System.out.println("pc = " + Integer.toHexString(pc));
 		sp = 0xFFFE;
+		//System.out.println("sp = " + Integer.toHexString(sp));
 		f = 0xB0;
+		//System.out.println("f = " + Integer.toHexString(f));
 		gbcRamBank = 1;
 		instrCount = 0;
 
@@ -324,14 +332,22 @@ class Dmgcpu {
 		}
 
 		//setBC(0x0013);
-		b = (short) ((0x0013 & 0xFF00) >> 8);
-		c = (short) (0x0013 & 0x00FF);
+		b = 0;
+		//System.out.println("b = " + Integer.toHexString(b));
+		//c = 0x0013;
+		c = 0;
+		//System.out.println("c = " + Integer.toHexString(c));
 		//setDE(0x00D8);
-		d = (short) ((0x00D8 & 0xFF00) >> 8);
-		e = (short) (0x00D8 & 0x00FF);
+		d = 0;
+		//System.out.println("d = " + Integer.toHexString(d));
+		//e = 0x00D8;
+		e = 0;
+		//System.out.println("e = " + Integer.toHexString(e));
 		//setHL(0x014D);
-		hl = 0x014D;
-		System.out.println("CPU reset");
+		//hl = 0x014D;
+		hl = 0;
+		//System.out.println("hl = " + Integer.toHexString(hl));
+		//System.out.println("CPU reset");
 
 		ioHandler.reset();
 	}
@@ -507,7 +523,9 @@ class Dmgcpu {
 				break;
 			case 0x04 :               // INC B
 				pc++;
+				//System.out.println("ANTES FLAG REGISTER IS " + Integer.toBinaryString(f));
 				f &= F_CARRY;
+				//System.out.println("DEPOIS FLAG REGISTER IS " + Integer.toBinaryString(f));
 				switch (b) {
 				case 0xFF: f |= F_HALFCARRY + F_ZERO;
 					b = 0x00;

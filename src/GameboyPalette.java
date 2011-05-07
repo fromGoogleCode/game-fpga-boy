@@ -25,7 +25,7 @@ import java.awt.*;
 
 /** This class represents a palette.  There can be three
  *  palettes, one for the background and window, and two
- *  for sprites. 
+ *  for sprites.
  */
 
 class GameboyPalette {

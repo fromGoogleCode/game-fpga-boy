@@ -108,7 +108,6 @@ class Cartridge {
 
 	boolean mbc1LargeRamMode = false;
 	boolean ramEnabled = false;
-	//, disposed = false;
 	Component applet;
 
 	boolean needsReset = false;
@@ -134,9 +133,11 @@ class Cartridge {
 
 			cartType = firstBank[0x0147];
 
-			numBanks = lookUpCartSize(firstBank[0x0148]);   // Determine the number of 16kb rom banks
+			//numBanks = lookUpCartSize(firstBank[0x0148]);   // Determine the number of 16kb rom banks
+			numBanks = 32;
 
 			rom = new byte[0x04000 * numBanks];   // Recreate the ROM array with the correct size
+			System.out.println("NumBanks = " + numBanks);
 
 			// Copy first bank into main rom array
 			for (int r = 0; r < 0x4000; r++) {
@@ -150,12 +151,12 @@ class Cartridge {
 			} while (total > 0);
 			is.close();
 
-			System.out.print("Loaded ROM 'rom.gbc'.  " + numBanks + " banks, " + (numBanks * 16) + "Kb.  " + getNumRAMBanks() + " RAM banks.");
-			System.out.print("Type: " + cartTypeTable[cartType] + " (" + JavaBoy.hexByte(cartType) + ")");
+			//System.out.print("Loaded ROM 'rom.gbc'.  " + numBanks + " banks, " + (numBanks * 16) + "Kb.  " + getNumRAMBanks() + " RAM banks.");
+			//System.out.print("Type: " + cartTypeTable[cartType] + " (" + JavaBoy.hexByte(cartType) + ")");
 
-			if (!verifyChecksum()) {
-				System.out.print("This cartridge has an invalid checksum. It may not execute correctly.");
-			}
+			//if (!verifyChecksum()) {
+			//	System.out.print("This cartridge has an invalid checksum. It may not execute correctly.");
+			//}
 
 			loadBatteryRam();
 
@@ -412,19 +413,17 @@ class Cartridge {
 
 		try {
 			numRamBanks = getNumRAMBanks();
+			FileInputStream is = new FileInputStream(new File("../roms/rom.sav"));
 
 			if ((cartType == 3) || (cartType == 9) || (cartType == 0x1B) || (cartType == 0x1E) || (cartType == 0x10) || (cartType == 0x13) ) {
-				FileInputStream is = new FileInputStream(new File("../roms/rom.sav"));
 				is.read(ram, 0, numRamBanks * 8192);
-				is.close();
-				System.out.println("Read SRAM from 'rom.sav'");
+				//System.out.println("Read SRAM from 'rom.sav'");
 			}
 			if (cartType == 6) {
-				FileInputStream is = new FileInputStream(new File("../roms/rom.sav"));
 				is.read(ram, 0, 512);
-				is.close();
-				System.out.println("Read SRAM from 'rom.sav'");
+				//System.out.println("Read SRAM from 'rom.sav'");
 			}
+			is.close();
 
 
 		} catch (IOException e) {

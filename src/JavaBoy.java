@@ -145,11 +145,11 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 			g.fillRect(0, 0, 160, 144);
 			g.setColor(new Color(255, 255, 255));
 			g.drawRect(0, 0, 160, 144);
-			g.drawString("JavaBoy (tm)", 10, 10);
-			g.drawString("Version 0.92 Downgrade by ChaoticGabibo", 10, 20);
+			//g.drawString("JavaBoy (tm)", 10, 10);
+			//g.drawString("Version 0.92 Downgrade by ChaoticGabibo", 10, 20);
 
-			g.drawString("Charging flux capacitor...", 10, 40);
-			g.drawString("Loading game ROM...", 10, 50);
+			//g.drawString("Charging flux capacitor...", 10, 40);
+			//g.drawString("Loading game ROM...", 10, 50);
 		}
 
 	}
