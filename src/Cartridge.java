@@ -207,35 +207,18 @@ class Cartridge {
 		mapRom(1);
 	}
 
-	/** Save the current mapper state */
-	/*
-	public void saveMapping() {
-		if ((cartType != 0) && (savedBank == -1)) savedBank = currentBank;
-	}
-	*/
-
-	/** Restore the saved mapper state */
-	/*
-	public void restoreMapping() {
-		if (savedBank != -1) {
-			System.out.println("- ROM Mapping restored to bank " + JavaBoy.hexByte(savedBank));
-			addressWrite(0x2000, savedBank);
-			savedBank = -1;
-		}
-	}
-	*/
-
 	/** Writes to an address in CPU address space.  Writes to ROM may cause a mapping change.
 	 */
+	/*
 	public final void addressWrite(int addr, int data) {
 		int ramAddress = 0;
 
 		switch (cartType) {
 
-		case 0 : /* ROM Only */
+		case 0 : // ROM Only
 			break;
 
-		case 1 : /* MBC1 */
+		case 1 : // MBC1
 		case 2 :
 		case 3 :
 			if ((addr >= 0xA000) && (addr <= 0xBFFF)) {
@@ -286,7 +269,7 @@ class Cartridge {
 		case 0x10 :
 		case 0x11 :
 		case 0x12 :
-		case 0x13 :	/* MBC3 */
+		case 0x13 :	// MBC3
 
 			// Select ROM bank
 			if ((addr >= 0x2000) && (addr <= 0x3FFF)) {
@@ -341,111 +324,10 @@ class Cartridge {
 		}
 
 	}
-	
-	/*
-	public int getNumRAMBanks() {
-		System.out.println("GET NUM RAM BANKS = " + rom[0x149]);
-		switch (rom[0x149]) {
-		case 0: {
-				return 0;
-			}
-		case 1:
-		case 2: {
-				return 1;
-			}
-		case 3: {
-				return 4;
-			}
-		case 4: {
-				return 16;
-			}
-		}
-		return 0;
-	}
 	*/
 	
-
-	/** Read an image of battery RAM into memory if the current cartridge mapper supports it.
-	 *  The filename is the same as the ROM filename, but with a .SAV extension.
-	# *  Files are compatible with VGB-DOS.
-	 */
-	/*
-	public void loadBatteryRam() {
-		int numRamBanks;
-
-		try {
-			numRamBanks = getNumRAMBanks();
-			FileInputStream is = new FileInputStream(new File("../roms/rom.sav"));
-
-			if ((cartType == 3) || (cartType == 9) || (cartType == 0x1B) || (cartType == 0x1E) || (cartType == 0x10) || (cartType == 0x13) ) {
-				is.read(ram, 0, numRamBanks * 8192);
-				//System.out.println("Read SRAM from 'rom.sav'");
-			}
-			if (cartType == 6) {
-				is.read(ram, 0, 512);
-				//System.out.println("Read SRAM from 'rom.sav'");
-			}
-			is.close();
-
-
-		} catch (IOException e) {
-			System.out.println("Error loading battery RAM from 'rom.sav'");
-		}
-	}
-	*/
-	/*
-	public int getBatteryRamSize() {
-		if (rom[0x149] == 0x06) {
-			return 512;
-		} else {
-			return getNumRAMBanks() * 8192;
-		}
-	}
-	*/
-
-	/*
-	public byte[] getBatteryRam() {
-		return ram;
-	}
-	*/
-
-	/*
-	public boolean canSave() {
-		return (cartType == 3) || (cartType == 9) || (cartType == 0x1B) || (cartType == 0x1E) || (cartType == 6) || (cartType == 0x10) || (cartType == 0x13);
-	}
-	*/
-
-	/** Writes an image of battery RAM to disk, if the current cartridge mapper supports it. */
-	/*
-	public void saveBatteryRam() {
-		int numRamBanks;
-
-		numRamBanks = getNumRAMBanks();
-
-		try {
-			if ((cartType == 3) || (cartType == 9) || (cartType == 0x1B) || (cartType == 0x1E) || (cartType == 0x10) || (cartType == 0x13)) {
-				FileOutputStream os = new FileOutputStream(new File("../roms/rom.sav"));
-				os.write(ram, 0, numRamBanks * 8192);
-				os.close();
-				System.out.println("Written SRAM to 'rom.sav'");
-			}
-			if (cartType == 6) {
-				FileOutputStream os = new FileOutputStream(new File("../roms/rom.sav"));
-				os.write(ram, 0, 512);
-				os.close();
-				System.out.println("Written SRAM to 'rom.sav'");
-			}
-
-		} catch (IOException e) {
-			System.out.println("Error saving battery RAM to 'rom.sav'");
-		}
-	}
-	*/
-
 	/** Performs saving of the battery RAM before the object is discarded */
 	public void dispose() {
-		//saveBatteryRam();
-		//disposed = true;
 	}
 
 	public boolean verifyChecksum() {

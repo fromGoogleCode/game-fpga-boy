@@ -215,7 +215,6 @@ class Dmgcpu {
 		case 0x5000 :
 		case 0x6000 :
 		case 0x7000 :
-			cartridge.addressWrite(addr, data);
 			break;
 
 		case 0x8000 :
@@ -225,7 +224,6 @@ class Dmgcpu {
 
 		case 0xA000 :
 		case 0xB000 :
-			cartridge.addressWrite(addr, data);
 			break;
 
 		case 0xC000 :
@@ -234,7 +232,6 @@ class Dmgcpu {
 
 		case 0xD000 :
 			mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)] = (byte) data;
-			//mainRam[addr - 0xE000] = (byte) data;
 			break;
 
 		case 0xE000 :
