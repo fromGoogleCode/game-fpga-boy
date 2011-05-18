@@ -121,47 +121,14 @@ class Cartridge {
 	/** Create a cartridge object, loading ROM and any associated battery RAM from the cartridge
 	 *  filename given.  Loads via the web if JavaBoy is running as an applet */
 	public Cartridge() {
-		InputStream is = null;
+		//InputStream is = null;
+		cartType = 0;
+		numBanks = 2;
+		rom = new byte[0x04000 * numBanks];   // Recreate the ROM array with the correct size
 		try {
-			is = new FileInputStream(new File("../roms/rom.gb"));
-			byte[] firstBank = new byte[0x04000];
-
-			int total = 0x04000;
-			do {
-				total -= is.read(firstBank, 0x04000 - total, total);      // Read the first bank (bank 0)
-			} while (total > 0);
-
-			//cartType = firstBank[0x0147];
-			//System.out.println("cartType = " + cartType);
-			cartType = 0;
-
-			//numBanks = lookUpCartSize(firstBank[0x0148]);   // Determine the number of 16kb rom banks
-			numBanks = 2;
-			//System.out.println("Numbanks = " + numBanks);
-
-			rom = new byte[0x04000 * numBanks];   // Recreate the ROM array with the correct size
-			//System.out.println("NumBanks = " + numBanks);
-
-			// Copy first bank into main rom array
-			for (int r = 0; r < 0x4000; r++) {
-				rom[r] = firstBank[r];
-			}
-
-			// Calculate total ROM size (first one already loaded)
-			total = 0x04000 * (numBanks - 1);
-			do { // Read ROM into memory
-				total -= is.read(rom, rom.length - total, total); // Read the entire ROM
-			} while (total > 0);
+			InputStream is = new FileInputStream(new File("../roms/rom.gb"));
+			is.read(rom); // Read the entire ROM
 			is.close();
-
-			//System.out.print("Loaded ROM 'rom.gbc'.  " + numBanks + " banks, " + (numBanks * 16) + "Kb.  " + getNumRAMBanks() + " RAM banks.");
-			//System.out.print("Type: " + cartTypeTable[cartType] + " (" + JavaBoy.hexByte(cartType) + ")");
-
-			//if (!verifyChecksum()) {
-			//	System.out.print("This cartridge has an invalid checksum. It may not execute correctly.");
-			//}
-
-			//loadBatteryRam();
 
 			// Set up the real time clock
 			Calendar rightNow = Calendar.getInstance();
@@ -179,8 +146,6 @@ class Cartridge {
 
 			realTimeStart = System.currentTimeMillis();
 			lastSecondIncrement = realTimeStart;
-
-			//cartridgeReady = true;
 
 		} catch (IOException e) {
 			System.out.println("Error opening ROM image 'rom.gbc'!");
@@ -223,24 +188,9 @@ class Cartridge {
 	 */
 	public final byte addressRead(int addr) {
 		if ((addr >= 0xA000) && (addr <= 0xBFFF)) {
-			switch (cartType) {
-			case 0x0F :
-			case 0x10 :
-			case 0x11 :
-			case 0x12 :
-			case 0x13 : {	/* MBC3 */
-					if (ramBank >= 0x04) {
-						return (byte) RTCReg[ramBank - 0x08];
-					} else {
-						return ram[addr - 0xA000 + ramPageStart];
-					}
-				}
-
-			default : {
-					return ram[addr - 0xA000 + ramPageStart];
-				}
-			}
-		} if (addr < 0x4000) {
+			return ram[addr - 0xA000 + ramPageStart];
+		}
+		if (addr < 0x4000) {
 			return (byte) (rom[addr]);
 		} else {
 			return (byte) (rom[pageStart + addr - 0x4000]);
