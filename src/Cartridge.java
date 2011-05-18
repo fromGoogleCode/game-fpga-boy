@@ -123,7 +123,7 @@ class Cartridge {
 	public Cartridge() {
 		InputStream is = null;
 		try {
-			is = new FileInputStream(new File("../roms/rom.gbc"));
+			is = new FileInputStream(new File("../roms/rom.gb"));
 			byte[] firstBank = new byte[0x04000];
 
 			int total = 0x04000;
@@ -131,13 +131,16 @@ class Cartridge {
 				total -= is.read(firstBank, 0x04000 - total, total);      // Read the first bank (bank 0)
 			} while (total > 0);
 
-			cartType = firstBank[0x0147];
+			//cartType = firstBank[0x0147];
+			//System.out.println("cartType = " + cartType);
+			cartType = 0;
 
 			//numBanks = lookUpCartSize(firstBank[0x0148]);   // Determine the number of 16kb rom banks
-			numBanks = 32;
+			numBanks = 2;
+			//System.out.println("Numbanks = " + numBanks);
 
 			rom = new byte[0x04000 * numBanks];   // Recreate the ROM array with the correct size
-			System.out.println("NumBanks = " + numBanks);
+			//System.out.println("NumBanks = " + numBanks);
 
 			// Copy first bank into main rom array
 			for (int r = 0; r < 0x4000; r++) {
@@ -158,7 +161,7 @@ class Cartridge {
 			//	System.out.print("This cartridge has an invalid checksum. It may not execute correctly.");
 			//}
 
-			loadBatteryRam();
+			//loadBatteryRam();
 
 			// Set up the real time clock
 			Calendar rightNow = Calendar.getInstance();
@@ -255,11 +258,14 @@ class Cartridge {
 	}
 
 	/** Save the current mapper state */
+	/*
 	public void saveMapping() {
 		if ((cartType != 0) && (savedBank == -1)) savedBank = currentBank;
 	}
+	*/
 
 	/** Restore the saved mapper state */
+	/*
 	public void restoreMapping() {
 		if (savedBank != -1) {
 			System.out.println("- ROM Mapping restored to bank " + JavaBoy.hexByte(savedBank));
@@ -267,6 +273,7 @@ class Cartridge {
 			savedBank = -1;
 		}
 	}
+	*/
 
 	/** Writes to an address in CPU address space.  Writes to ROM may cause a mapping change.
 	 */
@@ -384,8 +391,10 @@ class Cartridge {
 		}
 
 	}
-
+	
+	/*
 	public int getNumRAMBanks() {
+		System.out.println("GET NUM RAM BANKS = " + rom[0x149]);
 		switch (rom[0x149]) {
 		case 0: {
 				return 0;
@@ -403,11 +412,14 @@ class Cartridge {
 		}
 		return 0;
 	}
+	*/
+	
 
 	/** Read an image of battery RAM into memory if the current cartridge mapper supports it.
 	 *  The filename is the same as the ROM filename, but with a .SAV extension.
 	# *  Files are compatible with VGB-DOS.
 	 */
+	/*
 	public void loadBatteryRam() {
 		int numRamBanks;
 
@@ -430,7 +442,8 @@ class Cartridge {
 			System.out.println("Error loading battery RAM from 'rom.sav'");
 		}
 	}
-
+	*/
+	/*
 	public int getBatteryRamSize() {
 		if (rom[0x149] == 0x06) {
 			return 512;
@@ -438,16 +451,22 @@ class Cartridge {
 			return getNumRAMBanks() * 8192;
 		}
 	}
+	*/
 
+	/*
 	public byte[] getBatteryRam() {
 		return ram;
 	}
+	*/
 
+	/*
 	public boolean canSave() {
 		return (cartType == 3) || (cartType == 9) || (cartType == 0x1B) || (cartType == 0x1E) || (cartType == 6) || (cartType == 0x10) || (cartType == 0x13);
 	}
+	*/
 
 	/** Writes an image of battery RAM to disk, if the current cartridge mapper supports it. */
+	/*
 	public void saveBatteryRam() {
 		int numRamBanks;
 
@@ -471,10 +490,11 @@ class Cartridge {
 			System.out.println("Error saving battery RAM to 'rom.sav'");
 		}
 	}
+	*/
 
 	/** Performs saving of the battery RAM before the object is discarded */
 	public void dispose() {
-		saveBatteryRam();
+		//saveBatteryRam();
 		//disposed = true;
 	}
 
