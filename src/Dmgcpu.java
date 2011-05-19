@@ -50,14 +50,6 @@ class Dmgcpu {
 	boolean timaEnabled = false;
 	int instrsPerTima = 6000;
 
-	/** TRUE when the CPU is currently processing an interrupt */
-	//boolean inInterrupt = false;
-
-	/** Enable the breakpoint flag.  As breakpoint instruction is used in some games, this is used to skip over it unless the breakpoint is actually in use */
-	//boolean breakpointEnable = false;
-
-	// Constants for flags register
-
 	/** Zero flag */
 	final short F_ZERO =      0x80;
 	/** Subtract/negative flag */
@@ -67,18 +59,18 @@ class Dmgcpu {
 	/** Carry flag */
 	final short F_CARRY =     0x10;
 
-	final short INSTRS_PER_VBLANK = 9000; /* 10000  */
+	final short INSTRS_PER_VBLANK = 9000;
 
 	/** Used to set the speed of the emulator.  This controls how
 	 *  many instructions are executed for each horizontal line scanned
 	 *  on the screen.  Multiply by 154 to find out how many instructions
 	 *  per frame.
 	 */
-	final short BASE_INSTRS_PER_HBLANK = 60;    /* 60    */
+	final short BASE_INSTRS_PER_HBLANK = 60;
 	short INSTRS_PER_HBLANK = BASE_INSTRS_PER_HBLANK;
 
 	/** Used to set the speed of DIV increments */
-	final short BASE_INSTRS_PER_DIV    = 33;    /* 33    */
+	final short BASE_INSTRS_PER_DIV    = 33;
 	short INSTRS_PER_DIV = BASE_INSTRS_PER_DIV;
 
 	// Constants for interrupts
@@ -433,7 +425,7 @@ class Dmgcpu {
 		graphicsChip.startTime = System.currentTimeMillis();
 		int b1, b2, b3, offset;
 
-		for (int r = 0; (r != numInstr) && (!terminate); r++) {
+		while (!terminate) {
 
 			instrCount++;
 
@@ -1832,13 +1824,11 @@ class Dmgcpu {
 					registerWrite((b1 & 0x38) >> 3, registerRead(b1 & 0x07));
 
 				} else {
-					//System.out.println("Unrecognized opcode (" + JavaBoy.hexByte(b1) + ")");
 					terminate = true;
 					pc++;
 					break;
 				}
 			}
-
 
 			if (ieDelay != -1) {
 
@@ -1851,12 +1841,11 @@ class Dmgcpu {
 
 			}
 
-
 			if (interruptsEnabled) {
 				checkInterrupts();
 			}
 
-			cartridge.update();
+			//cartridge.update();
 
 
 			initiateInterrupts();
