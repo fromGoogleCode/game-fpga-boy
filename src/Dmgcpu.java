@@ -24,6 +24,10 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /** This is the main controlling class for the emulation
  *  It contains the code to emulate the Z80-like processor
@@ -90,13 +94,6 @@ class Dmgcpu {
 	/** P10 - P13 (Joypad) interrupt */
 	public final short INT_P10 =     0x10;
 
-	String[] registerNames =
-	        {"B", "C", "D", "E", "H", "L", "(HL)", "A"};
-	String[] aluOperations =
-	        {"ADD", "ADC", "SUB", "SBC", "AND", "XOR", "OR", "CP"};
-	String[] shiftOperations =
-	        {"RLC", "RRC", "RL", "RR", "SLA", "SRA", "SWAP", "SRL"};
-
 	// 8Kb main system RAM appears at 0xC000 in address space
 	// 32Kb for GBC
 	byte[] mainRam = new byte[0x8000];
@@ -104,7 +101,7 @@ class Dmgcpu {
 	// 256 bytes at top of RAM are used mainly for registers
 	byte[] oam = new byte[0x100];
 
-	Cartridge cartridge;
+	//Cartridge cartridge;
 	GraphicsChip graphicsChip;
 	IoHandler ioHandler;
 	Component applet;
@@ -114,11 +111,20 @@ class Dmgcpu {
 	boolean gbcFeatures = true;
 	int gbcRamBank = 1;
 
+	byte[] rom = new byte[0x8000];
+	
 	/** Create a CPU emulator with the supplied cartridge and game link objects.  Both can be set up
 	 *  or changed later if needed
 	 */
-	public Dmgcpu(Cartridge c, Component a) {
-		cartridge = c;
+	public Dmgcpu(Component a) {
+		//cartridge = c;
+		try {
+			InputStream is = new FileInputStream(new File("../roms/rom.gb"));
+			is.read(rom); // Read the entire ROM
+			is.close();
+		} catch (IOException e) {
+			System.out.println("Error opening ROM image 'rom.gbc'!");
+		}
 		graphicsChip = new TileBasedGraphicsChip(a, this);
 		ioHandler = new IoHandler(this);
 		applet = a;
@@ -145,7 +151,8 @@ class Dmgcpu {
 		case 0x5000 :
 		case 0x6000 :
 		case 0x7000 :
-			return cartridge.addressRead(addr);
+			//return cartridge.addressRead(addr);
+			return rom[addr];
 
 		case 0x8000 :
 		case 0x9000 :

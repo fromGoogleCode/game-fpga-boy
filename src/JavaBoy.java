@@ -31,7 +31,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 	private boolean appletRunning = true;
 	private boolean fullFrame = true;
 	
-	Cartridge cartridge;
 	Dmgcpu dmgcpu;
 	GraphicsChip graphicsChip;
 	Image doubleBuffer;
@@ -179,8 +178,7 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 		Thread p = new Thread(this);
 		addKeyListener(this);
 		System.out.println("JavaBoy (tm) Version 0.92 Downgrade by ChaoticGabibo (c) 2005 Neil Millstone (applet)");
-		cartridge = new Cartridge();
-		dmgcpu = new Dmgcpu(cartridge, this);
+		dmgcpu = new Dmgcpu(this);
 		dmgcpu.graphicsChip.setMagnify(1);
 		this.requestFocus();
 		p.start();
@@ -206,7 +204,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 
 	/** Free up allocated memory */
 	public void dispose() {
-		if (cartridge != null) cartridge.dispose();
 		if (dmgcpu != null) dmgcpu.dispose();
 	}
 
