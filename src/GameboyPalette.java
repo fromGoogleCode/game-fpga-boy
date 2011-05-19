@@ -47,19 +47,6 @@ class GameboyPalette {
 		data[3] = (short) c4;
 	}
 
-	/** Create a palette from the internal Gameboy format */
-	public GameboyPalette(int pal) {
-		decodePalette(pal);
-	}
-
-	/** Change the colour mappings */
-	public void setColours(int c1, int c2, int c3, int c4) {
-		colours[0] = c1;
-		colours[1] = c2;
-		colours[2] = c3;
-		colours[3] = c4;
-	}
-
 	/** Get the palette from the internal Gameboy Color format */
 	public byte getGbcColours(int entryNo, boolean high) {
 		if (high) {

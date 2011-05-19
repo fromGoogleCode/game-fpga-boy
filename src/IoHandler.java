@@ -120,27 +120,17 @@ class IoHandler {
 
 		case 0x69 :       // GBC BG Sprite palette
 
-			if (dmgcpu.gbcFeatures) {
-				int palNumber = (registers[0x68] & 0x38) >> 3;
-				return dmgcpu.graphicsChip.gbcBackground[palNumber].getGbcColours(
-				               (JavaBoy.unsign(registers[0x68]) & 0x06) >> 1,
-				               (JavaBoy.unsign(registers[0x68]) & 0x01) == 1);
-			} else {
-				return registers[num];
-			}
-
+			int palNumber = (registers[0x68] & 0x38) >> 3;
+			return dmgcpu.graphicsChip.gbcBackground[palNumber].getGbcColours(
+		               (JavaBoy.unsign(registers[0x68]) & 0x06) >> 1,
+		               (JavaBoy.unsign(registers[0x68]) & 0x01) == 1);
 
 		case 0x6B :       // GBC OBJ Sprite palette
 
-			if (dmgcpu.gbcFeatures) {
-				int palNumber = (registers[0x6A] & 0x38) >> 3;
-				return dmgcpu.graphicsChip.gbcSprite[palNumber].getGbcColours(
-				               (JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
-				               (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1);
-			} else {
-				return registers[num];
-			}
-
+			int index = (registers[0x6A] & 0x38) >> 3;
+			return dmgcpu.graphicsChip.gbcSprite[index].getGbcColours(
+		               (JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
+		               (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1);
 
 		default:
 			return registers[num];
@@ -410,10 +400,8 @@ class IoHandler {
 			break;
 
 		case 0x4F :
-			if (dmgcpu.gbcFeatures) {
-				dmgcpu.graphicsChip.tileStart = (data & 0x01) * 384;
-				dmgcpu.graphicsChip.vidRamStart = (data & 0x01) * 0x2000;
-			}
+			dmgcpu.graphicsChip.tileStart = (data & 0x01) * 384;
+			dmgcpu.graphicsChip.vidRamStart = (data & 0x01) * 0x2000;
 			registers[0x4F] = (byte) data;
 			break;
 
@@ -448,38 +436,32 @@ class IoHandler {
 
 		case 0x69 :           // FF69 - BCPD: GBC BG Palette data write
 
-			if (dmgcpu.gbcFeatures) {
-				int palNumber = (registers[0x68] & 0x38) >> 3;
-				dmgcpu.graphicsChip.gbcBackground[palNumber].setGbcColours(
-				        (JavaBoy.unsign(registers[0x68]) & 0x06) >> 1,
-				        (JavaBoy.unsign(registers[0x68]) & 0x01) == 1, JavaBoy.unsign(data));
-				dmgcpu.graphicsChip.invalidateAll(palNumber * 4);
+			int palNumber = (registers[0x68] & 0x38) >> 3;
+			dmgcpu.graphicsChip.gbcBackground[palNumber].setGbcColours(
+			        (JavaBoy.unsign(registers[0x68]) & 0x06) >> 1,
+			        (JavaBoy.unsign(registers[0x68]) & 0x01) == 1, JavaBoy.unsign(data));
+			dmgcpu.graphicsChip.invalidateAll(palNumber * 4);
 
-				if ((JavaBoy.unsign(registers[0x68]) & 0x80) != 0) {
-					registers[0x68]++;
-				}
-
+			if ((JavaBoy.unsign(registers[0x68]) & 0x80) != 0) {
+				registers[0x68]++;
 			}
-
 
 			registers[0x69] = (byte) data;
 			break;
 
 		case 0x6B :           // FF6B - OCPD: GBC Sprite Palette data write
 
-			if (dmgcpu.gbcFeatures) {
-				int palNumber = (registers[0x6A] & 0x38) >> 3;
-				dmgcpu.graphicsChip.gbcSprite[palNumber].setGbcColours(
-				        (JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
-				        (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1, JavaBoy.unsign(data));
-				dmgcpu.graphicsChip.invalidateAll((palNumber * 4) + 32);
+			int index = (registers[0x6A] & 0x38) >> 3;
+			dmgcpu.graphicsChip.gbcSprite[index].setGbcColours(
+			        (JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
+			        (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1, JavaBoy.unsign(data));
+			dmgcpu.graphicsChip.invalidateAll((index * 4) + 32);
 
-				if ((JavaBoy.unsign(registers[0x6A]) & 0x80) != 0) {
-					if ((registers[0x6A] & 0x3F) == 0x3F) {
-						registers[0x6A] = (byte) 0x80;
-					} else {
-						registers[0x6A]++;
-					}
+			if ((JavaBoy.unsign(registers[0x6A]) & 0x80) != 0) {
+				if ((registers[0x6A] & 0x3F) == 0x3F) {
+					registers[0x6A] = (byte) 0x80;
+				} else {
+					registers[0x6A]++;
 				}
 			}
 
@@ -488,16 +470,13 @@ class IoHandler {
 
 
 		case 0x70 :           // FF70 - GBC Work RAM bank
-			if (dmgcpu.gbcFeatures) {
-				if (((data & 0x07) == 0) || ((data & 0x07) == 1)) {
-					dmgcpu.gbcRamBank = 1;
-				} else {
-					dmgcpu.gbcRamBank = data & 0x07;
-				}
+			if (((data & 0x07) == 0) || ((data & 0x07) == 1)) {
+				dmgcpu.gbcRamBank = 1;
+			} else {
+				dmgcpu.gbcRamBank = data & 0x07;
 			}
 			registers[0x70] = (byte) data;
 			break;
-
 
 		default:
 

@@ -113,24 +113,13 @@ class TileBasedGraphicsChip extends GraphicsChip {
 					tileNum &= 0xFE;
 				}
 
-				if (dmgcpu.gbcFeatures) {
-					if ((attributes & 0x08) != 0) {
-						vidRamAddress = 0x2000 + (tileNum << 4);
-						tileNum += 384;
-						//tileBankStart = 0x2000;
-					} else {
-						vidRamAddress = tileNum << 4;
-					}
-					spriteAttrib += ((attributes & 0x07) << 2) + 32;
-
+				if ((attributes & 0x08) != 0) {
+					vidRamAddress = 0x2000 + (tileNum << 4);
+					tileNum += 384;
 				} else {
 					vidRamAddress = tileNum << 4;
-					if ((attributes & 0x10) != 0) {
-						spriteAttrib |= TILE_OBJ2;
-					} else {
-						spriteAttrib |= TILE_OBJ1;
-					}
 				}
+				spriteAttrib += ((attributes & 0x07) << 2) + 32;
 
 				if ((attributes & 0x20) != 0) {
 					spriteAttrib |= TILE_FLIPX;
@@ -205,9 +194,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 			savedWindowDataSelect = bgWindowDataSelect;
 		}
 
-		// Can't disable background on GBC (?!).  Apperently not, according to BGB
-		if ((!bgEnabled) && (!dmgcpu.gbcFeatures)) return;
-
 		int xPixelOfs = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x43]) % 8;
 		int yPixelOfs = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x42]) % 8;
 
@@ -224,7 +210,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 			int y = ((line + yPixelOfs) / 8);
 
 			if (hiBgTileMapAddress) {
-				bgStartAddress = 0x1C00;  /* 1C00 */
+				bgStartAddress = 0x1C00;
 			} else {
 				bgStartAddress = 0x1800;
 			}
@@ -248,26 +234,19 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 				int attribs = 0;
 
-				if (dmgcpu.gbcFeatures) {
-
-					if ((attributeData & 0x08) != 0) {
-						vidMemAddr = 0x2000 + (tileNum << 4);
-						tileNum += 384;
-					} else {
-						vidMemAddr = (tileNum << 4);
-					}
-					if ((attributeData & 0x20) != 0) {
-						attribs |= TILE_FLIPX;
-					}
-					if ((attributeData & 0x40) != 0) {
-						attribs |= TILE_FLIPY;
-					}
-					attribs += ((attributeData & 0x07) * 4);
-
+				if ((attributeData & 0x08) != 0) {
+					vidMemAddr = 0x2000 + (tileNum << 4);
+					tileNum += 384;
 				} else {
 					vidMemAddr = (tileNum << 4);
-					attribs = TILE_BKG;
 				}
+				if ((attributeData & 0x20) != 0) {
+					attribs |= TILE_FLIPX;
+				}
+				if ((attributeData & 0x40) != 0) {
+					attribs |= TILE_FLIPY;
+				}
+				attribs += ((attributeData & 0x07) * 4);
 
 
 				if (tiles[tileNum].invalid(attribs)) {
@@ -288,7 +267,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 	public boolean isFrameReady() {
 		return (framesDrawn % frameSkip) == 0;
-		//return framesDrawn == 0;
 	}
 
 	/** Draw the current graphics frame into the given graphics context */
@@ -336,25 +314,20 @@ class TileBasedGraphicsChip extends GraphicsChip {
 					}
 					tileDataAddress = tileNum << 4;
 
-					if (dmgcpu.gbcFeatures) {
-						attribData = JavaBoy.unsign(videoRam[tileAddress + 0x2000]);
+					attribData = JavaBoy.unsign(videoRam[tileAddress + 0x2000]);
 
-						attribs = (attribData & 0x07) << 2;
+					attribs = (attribData & 0x07) << 2;
 
-						if ((attribData & 0x08) != 0) {
-							tileNum += 384;
-							tileDataAddress += 0x2000;
-						}
+					if ((attribData & 0x08) != 0) {
+						tileNum += 384;
+						tileDataAddress += 0x2000;
+					}
 
-						if ((attribData & 0x20) != 0) {
-							attribs |= TILE_FLIPX;
-						}
-						if ((attribData & 0x40) != 0) {
-							attribs |= TILE_FLIPY;
-						}
-
-					} else {
-						attribs = TILE_BKG;
+					if ((attribData & 0x20) != 0) {
+						attribs |= TILE_FLIPX;
+					}
+					if ((attribData & 0x40) != 0) {
+						attribs |= TILE_FLIPY;
 					}
 
 					if (wy + y * 8 < windowStopLine) {
@@ -370,7 +343,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		// Draw sprites if the flag was on at any time during this frame
 		drawSprites(back, 0);
 
-		if ((spritesEnabled) && (dmgcpu.gbcFeatures)) {
+		if (spritesEnabled) {
 			drawSprites(back, 1);
 		}
 
@@ -447,20 +420,10 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 			GameboyPalette pal;
 
-			if (dmgcpu.gbcFeatures) {
-				if (attribs < 32) {
-					pal = gbcBackground[attribs >> 2];
-				} else {
-					pal = gbcSprite[(attribs >> 2) - 8];
-				}
+			if (attribs < 32) {
+				pal = gbcBackground[attribs >> 2];
 			} else {
-				if ((attribs & TILE_OBJ1) != 0) {
-					pal = obj1Palette;
-				} else if ((attribs & TILE_OBJ2) != 0) {
-					pal = obj2Palette;
-				} else {
-					pal = backgroundPalette;
-				}
+				pal = gbcSprite[(attribs >> 2) - 8];
 			}
 
 			for (int y = 0; y < 8; y++) {
@@ -488,7 +451,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 					/* Turn on transparency for background */
 
-					if ((!dmgcpu.gbcFeatures) || ((attribs >> 2) > 7)) {
+					if ((attribs >> 2) > 7) {
 						if (entryNumber == 0) {
 							rgbValue &= 0x00FFFFFF;
 						}

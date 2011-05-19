@@ -71,9 +71,6 @@ abstract class GraphicsChip {
 	/** The number of frames that have been drawn so far in the current frame sampling period */
 	int framesDrawn = 0;
 
-	/** Amount of time to wait between frames (ms) */
-	int frameWaitTime = 0;
-
 	/** The current frame has finished drawing */
 	boolean frameDone = false;
 	long startTime = 0;

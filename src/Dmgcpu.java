@@ -1,5 +1,3 @@
-// Mahjong Quest - Value set at 045E
-
 /*
 
 JavaBoy
@@ -108,7 +106,6 @@ class Dmgcpu {
 	boolean terminate;
 	boolean running = false;
 
-	boolean gbcFeatures = true;
 	int gbcRamBank = 1;
 
 	byte[] rom = new byte[0x8000];
@@ -386,7 +383,7 @@ class Dmgcpu {
 				triggerInterrupt(INT_LCDC);
 			}
 
-			if ((gbcFeatures) && (ioHandler.hdmaRunning)) {
+			if (ioHandler.hdmaRunning) {
 				ioHandler.performHdma();
 			}
 
