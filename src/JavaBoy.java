@@ -25,13 +25,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
-/** This is the main controlling class which contains the main() method
- *  to run JavaBoy as an application, and also the necessary applet methods.
- *  It also implements a full command based debugger using the console.
- */
 public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener {
 	static final long serialVersionUID = 10;
-	private static final String hexChars = "0123456789ABCDEF";
 
 	private boolean appletRunning = true;
 	private boolean fullFrame = true;
@@ -42,9 +37,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 	Image doubleBuffer;
 
 	static int[] keyCodes = {38, 40, 37, 39, 90, 88, 10, 8};
-
-	/** True if the image size changed last frame, and we need to repaint the background */
-	boolean imageSizeChanged = false;
 
 	/** Returns the unsigned value (0 - 255) of a signed byte */
 	static public short unsign(byte b) {
@@ -64,29 +56,16 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 		}
 	}
 
-	/** Returns a string representation of an 8-bit number in hexadecimal */
-	static public String hexByte(int b) {
-		String s = new Character(hexChars.charAt(b >> 4)).toString();
-		s = s + new Character(hexChars.charAt(b & 0x0F)).toString();
-
-		return s;
-	}
-
-	/** Returns a string representation of an 16-bit number in hexadecimal */
-	static public String hexWord(int w) {
-		return new String(hexByte((w & 0x0000FF00) >>  8) + hexByte(w & 0x000000FF));
-	}
-
 	/** When running as an applet, updates the screen when necessary */
 	public void paint(Graphics g) {
 		if (dmgcpu != null) {
 
 			// Center the GB image
-			int x = 0;
-			int y = 0;
+			//int x = 0;
+			//int y = 0;
 
-			if (!fullFrame && !imageSizeChanged) {
-				dmgcpu.graphicsChip.draw(g, x, y, this);
+			if (!fullFrame) {
+				dmgcpu.graphicsChip.draw(g, 0, 0, this);
 			} else {
 				Graphics bufferGraphics = doubleBuffer.getGraphics();
 
@@ -94,11 +73,11 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 					bufferGraphics.setColor(new Color(255, 255, 255));
 					bufferGraphics.fillRect(0, 0, 160, 144);
 
-					dmgcpu.graphicsChip.draw(bufferGraphics, x, y, this);
+					dmgcpu.graphicsChip.draw(bufferGraphics, 0, 0, this);
 
 					g.drawImage(doubleBuffer, 0, 0, this);
 				} else {
-					dmgcpu.graphicsChip.draw(bufferGraphics, x, y, this);
+					dmgcpu.graphicsChip.draw(bufferGraphics, 0, 0, this);
 				}
 
 			}
@@ -107,11 +86,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 			g.fillRect(0, 0, 160, 144);
 			g.setColor(new Color(255, 255, 255));
 			g.drawRect(0, 0, 160, 144);
-			//g.drawString("JavaBoy (tm)", 10, 10);
-			//g.drawString("Version 0.92 Downgrade by ChaoticGabibo", 10, 20);
-
-			//g.drawString("Charging flux capacitor...", 10, 40);
-			//g.drawString("Loading game ROM...", 10, 50);
 		}
 
 	}

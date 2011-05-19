@@ -128,13 +128,6 @@ class Dmgcpu {
 	public Dmgcpu(Cartridge c, Component a) {
 		cartridge = c;
 		graphicsChip = new TileBasedGraphicsChip(a, this);
-		//if ( (cartridge.rom[0x143] & 0x80) == 0x80) {
-		//	gbcFeatures = true;
-		//	System.out.println("GameBoy Color features are ON");
-		//} else {
-		//	gbcFeatures = false;
-		//	System.out.println("GameBoy Color features are OFF");
-		//}
 		ioHandler = new IoHandler(this);
 		applet = a;
 	}
@@ -143,13 +136,6 @@ class Dmgcpu {
 	public void dispose() {
 		graphicsChip.dispose();
 	}
-
-	/** Force the execution thread to stop and return to it's caller */
-	/*
-	public void terminateProcess() {
-		terminate = true;
-	}
-	*/
 
 	/** Perform a CPU address space read.  This maps all the relevant objects into the correct parts of
 	 *  the memory
@@ -173,10 +159,6 @@ class Dmgcpu {
 		case 0x9000 :
 			return graphicsChip.addressRead(addr - 0x8000);
 
-		//case 0xA000 :
-		//case 0xB000 :
-			//return cartridge.addressRead(addr);
-
 		case 0xC000 :
 			return (mainRam[addr - 0xC000]);
 
@@ -196,7 +178,6 @@ class Dmgcpu {
 			}
 
 		default:
-			System.out.println("Tried to read address " + addr + ".  pc = " + JavaBoy.hexWord(pc));
 			return 0xFF;
 		}
 
@@ -244,7 +225,6 @@ class Dmgcpu {
 				try {
 					mainRam[addr - 0xE000] = (byte) data;
 				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println("Address error: " + addr + " pc = " + JavaBoy.hexWord(pc));
 				}
 			} else if (addr < 0xFF00) {
 				oam[addr - 0xFE00] = (byte) data;
@@ -1852,7 +1832,7 @@ class Dmgcpu {
 					registerWrite((b1 & 0x38) >> 3, registerRead(b1 & 0x07));
 
 				} else {
-					System.out.println("Unrecognized opcode (" + JavaBoy.hexByte(b1) + ")");
+					//System.out.println("Unrecognized opcode (" + JavaBoy.hexByte(b1) + ")");
 					terminate = true;
 					pc++;
 					break;
