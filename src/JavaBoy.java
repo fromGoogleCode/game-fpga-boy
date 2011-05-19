@@ -29,54 +29,16 @@ import java.awt.event.ActionEvent;
  *  to run JavaBoy as an application, and also the necessary applet methods.
  *  It also implements a full command based debugger using the console.
  */
-//public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener, WindowListener, ActionListener, ItemListener {
 public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener {
 	static final long serialVersionUID = 10;
 	private static final String hexChars = "0123456789ABCDEF";
 
 	private boolean appletRunning = true;
 	private boolean fullFrame = true;
-
-	/** These strings contain all the names for the colour schemes.
-	 *  A scheme can be activated using the view menu when JavaBoy is
-	 *  running as an application.
-	 */
-	/*
-	static public String[] schemeNames =
-	        {"Standard colours", "LCD shades", "Midnight garden", "Psychadelic"};
-	*/
-	/** This array contains the actual data for the colour schemes.
-	 *  These are only using in DMG mode.
-	 *  The first four values control the BG palette, the second four
-	 *  are the OBJ0 palette, and the third set of four are OBJ1.
-	 */
-	/*
-	static public int[][] schemeColours =
-	        {{0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000,
-	          0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000,
-	          0xFFFFFFFF, 0xFFAAAAAA, 0xFF555555, 0xFF000000},
-
-	         {0xFFFFFFC0, 0xFFC2C41E, 0xFF949600, 0xFF656600,
-	          0xFFFFFFC0, 0xFFC2C41E, 0xFF949600, 0xFF656600,
-	          0xFFFFFFC0, 0xFFC2C41E, 0xFF949600, 0xFF656600},
-
-	         {0xFFC0C0FF, 0xFF4040FF, 0xFF0000FF, 0xFF000080,
-	          0xFFC0FFC0, 0xFF00C000, 0xFF008000, 0xFF004000,
-	          0xFFC0FFC0, 0xFF00C000, 0xFF008000, 0xFF004000},
-
-	         {0xFFFFC0FF, 0xFF8080FF, 0xFFC000C0, 0xFF800080,
-	          0xFFFFFF40, 0xFFC0C000, 0xFFFF4040, 0xFF800000,
-	          0xFF80FFFF, 0xFF00C0C0, 0xFF008080, 0xFF004000}};
-	*/
-	/** When emulation running, references the currently loaded cartridge */
+	
 	Cartridge cartridge;
-
-	/** When emulation running, references the current CPU object */
 	Dmgcpu dmgcpu;
-
-	/** When emulation running, references the current graphics chip implementation */
 	GraphicsChip graphicsChip;
-
 	Image doubleBuffer;
 
 	static int[] keyCodes = {38, 40, 37, 39, 90, 88, 10, 8};
@@ -238,17 +200,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 		dispose();
 		System.exit(0);
 	}
-
-	/*
-	public JavaBoy() {
-		addKeyListener(this);
-		System.out.println("JavaBoy (tm) Version " + versionString + " (c) 2005 Neil Millstone (applet)");
-		cartridge = new Cartridge("../roms/rom.gbc");
-		dmgcpu = new Dmgcpu(cartridge, this);
-		dmgcpu.graphicsChip.setMagnify(1);
-		this.requestFocus();
-	}
-	*/
 
 	public void start() {
 		Thread p = new Thread(this);

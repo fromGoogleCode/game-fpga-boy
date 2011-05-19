@@ -84,7 +84,7 @@ class Cartridge {
 	public byte[] rom;
 
 	/** Contains the RAM on the cartridge */
-	public byte[] ram = new byte[0x10000];
+	//public byte[] ram = new byte[0x10000];
 
 	/** Number of 16Kb ROM banks */
 	int numBanks;
@@ -188,7 +188,7 @@ class Cartridge {
 	 */
 	public final byte addressRead(int addr) {
 		if ((addr >= 0xA000) && (addr <= 0xBFFF)) {
-			return ram[addr - 0xA000 + ramPageStart];
+			//return ram[addr - 0xA000 + ramPageStart];
 		}
 		if (addr < 0x4000) {
 			return (byte) (rom[addr]);
@@ -198,14 +198,16 @@ class Cartridge {
 	}
 
 	/** Maps a ROM bank into the CPU address space at 0x4000 */
-	public void mapRom(int bankNo) {
-		currentBank = bankNo;
-		pageStart = 0x4000 * bankNo;
-	}
+	//public void mapRom(int bankNo) {
+	//	currentBank = bankNo;
+	//	pageStart = 0x4000 * bankNo;
+	//}
 
-	public void reset() {
-		mapRom(1);
-	}
+	//public void reset() {
+		//mapRom(1);
+		//currentBank = 1;
+		//pageStart = 0x4000;
+	//}
 
 	/** Writes to an address in CPU address space.  Writes to ROM may cause a mapping change.
 	 */

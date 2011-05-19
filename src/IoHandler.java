@@ -47,7 +47,7 @@ class IoHandler {
 
 	/** Initialize IO to initial power on state */
 	public void reset() {
-		System.out.println("Hardware reset");
+		System.out.println("IO Hardware reset");
 		for (int r = 0; r < 0xFF; r++) {
 			ioWrite(r, (short) 0x00);
 		}

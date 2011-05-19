@@ -54,7 +54,7 @@ class Dmgcpu {
 	//boolean inInterrupt = false;
 
 	/** Enable the breakpoint flag.  As breakpoint instruction is used in some games, this is used to skip over it unless the breakpoint is actually in use */
-	boolean breakpointEnable = false;
+	//boolean breakpointEnable = false;
 
 	// Constants for flags register
 
@@ -119,7 +119,7 @@ class Dmgcpu {
 	boolean terminate;
 	boolean running = false;
 
-	boolean gbcFeatures = false;
+	boolean gbcFeatures = true;
 	int gbcRamBank = 1;
 
 	/** Create a CPU emulator with the supplied cartridge and game link objects.  Both can be set up
@@ -145,9 +145,11 @@ class Dmgcpu {
 	}
 
 	/** Force the execution thread to stop and return to it's caller */
+	/*
 	public void terminateProcess() {
 		terminate = true;
 	}
+	*/
 
 	/** Perform a CPU address space read.  This maps all the relevant objects into the correct parts of
 	 *  the memory
@@ -171,15 +173,14 @@ class Dmgcpu {
 		case 0x9000 :
 			return graphicsChip.addressRead(addr - 0x8000);
 
-		case 0xA000 :
-		case 0xB000 :
-			return cartridge.addressRead(addr);
+		//case 0xA000 :
+		//case 0xB000 :
+			//return cartridge.addressRead(addr);
 
 		case 0xC000 :
 			return (mainRam[addr - 0xC000]);
 
 		case 0xD000 :
-			//return (mainRam[addr - 0xE000]);
 			return (mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)]);
 
 		case 0xE000 :
@@ -296,55 +297,22 @@ class Dmgcpu {
 
 	/** Resets the CPU to it's power on state.  Memory contents are not cleared. */
 	public void reset() {
-
-		if ( (cartridge.rom[0x143] & 0x80) == 0x80) { // GBC Cartridge ID
-			gbcFeatures = true;
-			System.out.println("GameBoy Color features are ON");
-		} else {
-			gbcFeatures = false;
-			System.out.println("GameBoy Color features are OFF");
-		}
 		setDoubleSpeedCpu(false);
 		graphicsChip.dispose();
-		cartridge.reset();
 		interruptsEnabled = false;
 		ieDelay = -1;
 		pc = 0x0100;
-		//System.out.println("pc = " + Integer.toHexString(pc));
 		sp = 0xFFFE;
-		//System.out.println("sp = " + Integer.toHexString(sp));
 		f = 0xB0;
-		//System.out.println("f = " + Integer.toHexString(f));
 		gbcRamBank = 1;
 		instrCount = 0;
 
-		if (gbcFeatures) {
-			a = 0x11;
-		} else {
-			a = 0x01;
-		}
-
-		for (int r = 0; r < 0x8000; r++) {
-			mainRam[r] = 0;
-		}
-
-		//setBC(0x0013);
+		a = 0x11;
 		b = 0;
-		//System.out.println("b = " + Integer.toHexString(b));
-		//c = 0x0013;
 		c = 0;
-		//System.out.println("c = " + Integer.toHexString(c));
-		//setDE(0x00D8);
 		d = 0;
-		//System.out.println("d = " + Integer.toHexString(d));
-		//e = 0x00D8;
 		e = 0;
-		//System.out.println("e = " + Integer.toHexString(e));
-		//setHL(0x014D);
-		//hl = 0x014D;
 		hl = 0;
-		//System.out.println("hl = " + Integer.toHexString(hl));
-		//System.out.println("CPU reset");
 
 		ioHandler.reset();
 	}
@@ -655,7 +623,7 @@ class Dmgcpu {
 			case 0x10 :               // STOP
 				pc+=2;
 
-				if (gbcFeatures) {
+				//if (gbcFeatures) {
 					if ((ioHandler.registers[0x4D] & 0x01) == 1) {
 						int newKey1Reg = ioHandler.registers[0x4D] & 0xFE;
 						if ((newKey1Reg & 0x80) == 0x80) {
@@ -667,7 +635,7 @@ class Dmgcpu {
 						}
 						ioHandler.registers[0x4D] = (byte) newKey1Reg;
 					}
-				}
+				//}
 
 				break;
 			case 0x11 :               // LD DE, nnnn
@@ -1184,12 +1152,12 @@ class Dmgcpu {
 				break;
 			case 0x52 :               // Debug breakpoint (LD D, D)
 				// As this instruction is used in games (why?) only break here if the breakpoint is on in the debugger
-				if (breakpointEnable) {
-					terminate = true;
-					System.out.println("- Breakpoint reached");
-				} else {
+				//if (breakpointEnable) {
+				//	terminate = true;
+				//	System.out.println("- Breakpoint reached");
+				//} else {
 					pc++;
-				}
+				//}
 				break;
 
 			case 0x76 :               // HALT
