@@ -65,12 +65,6 @@ abstract class GraphicsChip {
 	/** The image containing the Gameboy screen */
 	Image backBuffer;
 
-	/** The current frame skip value */
-	int frameSkip = 1;
-
-	/** The number of frames that have been drawn so far in the current frame sampling period */
-	int framesDrawn = 0;
-
 	/** The current frame has finished drawing */
 	boolean frameDone = false;
 	long startTime = 0;
@@ -80,7 +74,6 @@ abstract class GraphicsChip {
 
 	/** If true, 8x16 sprites are being used.  Otherwise, 8x8. */
 	boolean doubledSprites = false;
-	// are there only 2 types??
 
 	/** Selection of one of two address for the BG tile map. */
 	boolean hiBgTileMapAddress= false;

@@ -79,11 +79,10 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	}
 
 	/** Invalidate all tiles in the tile cache */
+	
 	public void invalidateAll() {
-		for (int r = 0; r < 384 * 2; r++) {
-			tiles[r].invalidate();
-		}
 	}
+	
 
 	/** Set the size of the Gameboy window. */
 	public void setMagnify(int m) {
@@ -164,9 +163,11 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	 */
 	public void notifyScanline(int line) {
 
-		if ((framesDrawn % frameSkip) != 0) {
-			return;
-		}
+		//if ((framesDrawn % frameSkip) != 0) {
+		//	System.out.println("FRamesdrawn = " + framesDrawn + " frameskip = " + frameSkip);
+		//	System.out.println("MOD is " + framesDrawn % frameSkip);
+		//	return;
+		//}
 
 		if (line == 0) {
 			clearFrameBuffer();
@@ -266,20 +267,25 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	}
 
 	public boolean isFrameReady() {
-		return (framesDrawn % frameSkip) == 0;
+		return true;
+		//System.out.println("FRamesdrawn = " + framesDrawn + " frameskip = " + frameSkip);
+		//System.out.println("MOD is " + framesDrawn % frameSkip);
+		//return (framesDrawn % frameSkip) == 0;
 	}
 
 	/** Draw the current graphics frame into the given graphics context */
 	public boolean draw(Graphics g, int startX, int startY, Component a) {
 		int tileNum;
 
-		if ((framesDrawn % frameSkip) != 0) {
-			frameDone = true;
-			framesDrawn++;
-			return false;
-		} else {
-			framesDrawn++;
-		}
+		//if ((framesDrawn % frameSkip) != 0) {
+		//	System.out.println("FRamesdrawn = " + framesDrawn + " frameskip = " + frameSkip);
+		//	System.out.println("MOD is " + framesDrawn % frameSkip);
+		//	frameDone = true;
+		//	framesDrawn++;
+		//	return false;
+		//} else {
+		//	framesDrawn++;
+		//}
 
 		Graphics back = backBuffer.getGraphics();
 

@@ -110,17 +110,19 @@ class Dmgcpu {
 
 	byte[] rom = new byte[0x8000];
 	
+	byte[] memory = new byte[0x10000];
+	
 	/** Create a CPU emulator with the supplied cartridge and game link objects.  Both can be set up
 	 *  or changed later if needed
 	 */
 	public Dmgcpu(Component a) {
-		//cartridge = c;
 		try {
 			InputStream is = new FileInputStream(new File("../roms/rom.gb"));
 			is.read(rom); // Read the entire ROM
 			is.close();
+			System.arraycopy(rom, 0, memory, 0, rom.length);
 		} catch (IOException e) {
-			System.out.println("Error opening ROM image 'rom.gbc'!");
+			System.out.println("Error opening ROM image");
 		}
 		graphicsChip = new TileBasedGraphicsChip(a, this);
 		ioHandler = new IoHandler(this);
@@ -149,13 +151,15 @@ class Dmgcpu {
 		case 0x6000 :
 		case 0x7000 :
 			//return cartridge.addressRead(addr);
-			return rom[addr];
+			//return rom[addr];
+			return memory[addr];
 
 		case 0x8000 :
 		case 0x9000 :
 			return graphicsChip.addressRead(addr - 0x8000);
 
 		case 0xC000 :
+			//return memory[addr];
 			return (mainRam[addr - 0xC000]);
 
 		case 0xD000 :
@@ -163,6 +167,7 @@ class Dmgcpu {
 
 		case 0xE000 :
 			return mainRam[addr - 0xE000];
+			//return memory[addr];
 
 		case 0xF000 :
 			if (addr < 0xFE00) {
@@ -413,13 +418,12 @@ class Dmgcpu {
 						java.lang.Thread.sleep(1);
 					}
 				} catch (InterruptedException e) {
-					// Nothing.
 				}
 			}
 		}
 	}
 
-	/** Execute the specified number of Gameboy instructions.  Use '-1' to execute forever */
+	/** Execute the specified number of Gameboy instructions. */
 	public final void execute(int numInstr) {
 
 		terminate = false;

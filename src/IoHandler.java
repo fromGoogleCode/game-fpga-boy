@@ -47,10 +47,6 @@ class IoHandler {
 
 	/** Initialize IO to initial power on state */
 	public void reset() {
-		System.out.println("IO Hardware reset");
-		//for (int r = 0; r < 0xFF; r++) {
-		//	ioWrite(r, (short) 0x00);
-		//}
 		ioWrite(0x40, (short) 0x91);
 		ioWrite(0x0F, (short) 0x01);
 		hdmaRunning = false;
@@ -313,7 +309,6 @@ class IoHandler {
 			registers[num] = (byte) data;
 			break;
 
-
 		case 0x40 :           // LCDC
 			dmgcpu.graphicsChip.bgEnabled = true;
 
@@ -432,8 +427,6 @@ class IoHandler {
 			registers[0x55] = (byte) data;
 			break;
 
-
-
 		case 0x69 :           // FF69 - BCPD: GBC BG Palette data write
 
 			int palNumber = (registers[0x68] & 0x38) >> 3;
@@ -473,13 +466,13 @@ class IoHandler {
 			if (((data & 0x07) == 0) || ((data & 0x07) == 1)) {
 				dmgcpu.gbcRamBank = 1;
 			} else {
+				System.out.println("Chegou aqui amigo...");
 				dmgcpu.gbcRamBank = data & 0x07;
 			}
 			registers[0x70] = (byte) data;
 			break;
 
 		default:
-
 			registers[num] = (byte) data;
 			break;
 		}
