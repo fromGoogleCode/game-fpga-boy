@@ -159,19 +159,21 @@ class Dmgcpu {
 			return graphicsChip.addressRead(addr - 0x8000);
 
 		case 0xC000 :
-			//return memory[addr];
-			return (mainRam[addr - 0xC000]);
+			return memory[addr];
+			//return (mainRam[addr - 0xC000]);
 
 		case 0xD000 :
-			return (mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)]);
+			//return (mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)]);
+			return memory[addr];
 
 		case 0xE000 :
-			return mainRam[addr - 0xE000];
-			//return memory[addr];
+			//return mainRam[addr - 0xE000];
+			return memory[addr];
 
 		case 0xF000 :
 			if (addr < 0xFE00) {
-				return mainRam[addr - 0xE000];
+				//return mainRam[addr - 0xE000];
+				return memory[addr];
 			} else if (addr < 0xFF00) {
 				return (short) (oam[addr - 0xFE00] & 0x00FF);
 			} else {
@@ -210,21 +212,25 @@ class Dmgcpu {
 			break;
 
 		case 0xC000 :
-			mainRam[addr - 0xC000] = (byte) data;
+			//mainRam[addr - 0xC000] = (byte) data;
+			memory[addr] = (byte) data;
 			break;
 
 		case 0xD000 :
-			mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)] = (byte) data;
+			//mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)] = (byte) data;
+			memory[addr] = (byte) data;
 			break;
 
 		case 0xE000 :
-			mainRam[addr - 0xE000] = (byte) data;
+			//mainRam[addr - 0xE000] = (byte) data;
+			memory[addr] = (byte) data;
 			break;
 
 		case 0xF000 :
 			if (addr < 0xFE00) {
 				try {
-					mainRam[addr - 0xE000] = (byte) data;
+					memory[addr] = (byte) data;
+					//mainRam[addr - 0xE000] = (byte) data;
 				} catch (ArrayIndexOutOfBoundsException e) {
 				}
 			} else if (addr < 0xFF00) {
