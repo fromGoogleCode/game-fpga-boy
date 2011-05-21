@@ -212,17 +212,8 @@ class Dmgcpu {
 			break;
 
 		case 0xC000 :
-			//mainRam[addr - 0xC000] = (byte) data;
-			memory[addr] = (byte) data;
-			break;
-
 		case 0xD000 :
-			//mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)] = (byte) data;
-			memory[addr] = (byte) data;
-			break;
-
 		case 0xE000 :
-			//mainRam[addr - 0xE000] = (byte) data;
 			memory[addr] = (byte) data;
 			break;
 
@@ -230,7 +221,6 @@ class Dmgcpu {
 			if (addr < 0xFE00) {
 				try {
 					memory[addr] = (byte) data;
-					//mainRam[addr - 0xE000] = (byte) data;
 				} catch (ArrayIndexOutOfBoundsException e) {
 				}
 			} else if (addr < 0xFF00) {
