@@ -92,14 +92,9 @@ class Dmgcpu {
 	/** P10 - P13 (Joypad) interrupt */
 	public final short INT_P10 =     0x10;
 
-	// 8Kb main system RAM appears at 0xC000 in address space
-	// 32Kb for GBC
-	byte[] mainRam = new byte[0x8000];
-
 	// 256 bytes at top of RAM are used mainly for registers
 	byte[] oam = new byte[0x100];
 
-	//Cartridge cartridge;
 	GraphicsChip graphicsChip;
 	IoHandler ioHandler;
 	Component applet;
@@ -108,8 +103,6 @@ class Dmgcpu {
 
 	int gbcRamBank = 1;
 
-	byte[] rom = new byte[0x8000];
-	
 	byte[] memory = new byte[0x10000];
 	
 	/** Create a CPU emulator with the supplied cartridge and game link objects.  Both can be set up
@@ -118,9 +111,9 @@ class Dmgcpu {
 	public Dmgcpu(Component a) {
 		try {
 			InputStream is = new FileInputStream(new File("../roms/rom.gb"));
-			is.read(rom); // Read the entire ROM
+			is.read(memory, 0, 0x8000); // Read the entire ROM
 			is.close();
-			System.arraycopy(rom, 0, memory, 0, rom.length);
+			//System.arraycopy(rom, 0, memory, 0, rom.length);
 		} catch (IOException e) {
 			System.out.println("Error opening ROM image");
 		}
@@ -150,8 +143,6 @@ class Dmgcpu {
 		case 0x5000 :
 		case 0x6000 :
 		case 0x7000 :
-			//return cartridge.addressRead(addr);
-			//return rom[addr];
 			return memory[addr];
 
 		case 0x8000 :
@@ -159,20 +150,12 @@ class Dmgcpu {
 			return graphicsChip.addressRead(addr - 0x8000);
 
 		case 0xC000 :
-			return memory[addr];
-			//return (mainRam[addr - 0xC000]);
-
 		case 0xD000 :
-			//return (mainRam[addr - 0xD000 + (gbcRamBank * 0x1000)]);
-			return memory[addr];
-
 		case 0xE000 :
-			//return mainRam[addr - 0xE000];
 			return memory[addr];
 
 		case 0xF000 :
 			if (addr < 0xFE00) {
-				//return mainRam[addr - 0xE000];
 				return memory[addr];
 			} else if (addr < 0xFF00) {
 				return (short) (oam[addr - 0xFE00] & 0x00FF);
