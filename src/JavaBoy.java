@@ -20,12 +20,10 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 import java.awt.*;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
-public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener {
+public class JavaBoy extends java.applet.Applet implements Runnable {
 	static final long serialVersionUID = 10;
 
 	private boolean appletRunning = true;
@@ -34,8 +32,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 	Dmgcpu dmgcpu;
 	GraphicsChip graphicsChip;
 	Image doubleBuffer;
-
-	static int[] keyCodes = {38, 40, 37, 39, 90, 88, 10, 8};
 
 	/** Returns the unsigned value (0 - 255) of a signed byte */
 	static public short unsign(byte b) {
@@ -97,69 +93,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 		repaint();
 	}
 
-	public void keyTyped(KeyEvent e) {
-	}
-
-	public void keyPressed(KeyEvent e) {
-		int key = e.getKeyCode();
-
-		if (key == keyCodes[0]) {
-			dmgcpu.ioHandler.padUp = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[1]) {
-			dmgcpu.ioHandler.padDown = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[2]) {
-			dmgcpu.ioHandler.padLeft = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[3]) {
-			dmgcpu.ioHandler.padRight = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[4]) {
-			dmgcpu.ioHandler.padA = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[5]) {
-			dmgcpu.ioHandler.padB = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[6]) {
-			dmgcpu.ioHandler.padStart = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[7]) {
-			dmgcpu.ioHandler.padSelect = true;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		}
-	}
-
-	public void keyReleased(KeyEvent e) {
-		int key = e.getKeyCode();
-
-		if (key == keyCodes[0]) {
-			dmgcpu.ioHandler.padUp = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[1]) {
-			dmgcpu.ioHandler.padDown = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[2]) {
-			dmgcpu.ioHandler.padLeft = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[3]) {
-			dmgcpu.ioHandler.padRight = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[4]) {
-			dmgcpu.ioHandler.padA = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[5]) {
-			dmgcpu.ioHandler.padB = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[6]) {
-			dmgcpu.ioHandler.padStart = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		} else if (key == keyCodes[7]) {
-			dmgcpu.ioHandler.padSelect = false;
-			dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_P10);
-		}
-	}
-
 	public void windowClosing(WindowEvent e) {
 		dispose();
 		System.exit(0);
@@ -167,7 +100,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 
 	public void start() {
 		Thread p = new Thread(this);
-		addKeyListener(this);
 		System.out.println("JavaBoy (tm) Version 0.92 Downgrade by ChaoticGabibo (c) 2005 Neil Millstone (applet)");
 		dmgcpu = new Dmgcpu(this);
 		dmgcpu.graphicsChip.setMagnify(1);

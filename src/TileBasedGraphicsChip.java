@@ -163,12 +163,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	 */
 	public void notifyScanline(int line) {
 
-		//if ((framesDrawn % frameSkip) != 0) {
-		//	System.out.println("FRamesdrawn = " + framesDrawn + " frameskip = " + frameSkip);
-		//	System.out.println("MOD is " + framesDrawn % frameSkip);
-		//	return;
-		//}
-
 		if (line == 0) {
 			clearFrameBuffer();
 			drawSprites(backBuffer.getGraphics(), 1);
@@ -264,10 +258,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		Graphics back = backBuffer.getGraphics();
 		back.setColor(new Color(backgroundPalette.getRgbEntry(0)));
 		back.fillRect(0, 0, 160, 144);
-	}
-
-	public boolean isFrameReady() {
-		return true;
 	}
 
 	/** Draw the current graphics frame into the given graphics context */

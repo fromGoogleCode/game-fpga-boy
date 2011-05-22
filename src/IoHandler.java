@@ -32,7 +32,7 @@ class IoHandler {
 	Dmgcpu dmgcpu;
 
 	/** Current state of the button, true = pressed. */
-	boolean padLeft, padRight, padUp, padDown, padA, padB, padStart, padSelect;
+	//boolean padLeft, padRight, padUp, padDown, padA, padB, padStart, padSelect;
 
 	boolean hdmaRunning;
 
@@ -137,34 +137,34 @@ class IoHandler {
 		switch (num) {
 		case 0x00 :           // FF00 - Joypad
 			short output = 0x0F;
-			if ((data & 0x10) == 0x00) {   // P14
-				if (padRight) {
-					output &= ~1;
-				}
-				if (padLeft) {
-					output &= ~2;
-				}
-				if (padUp) {
-					output &= ~4;
-				}
-				if (padDown) {
-					output &= ~8;
-				}
-			}
-			if ((data & 0x20) == 0x00) {   // P15
-				if (padA) {
-					output &= ~0x01;
-				}
-				if (padB) {
-					output &= ~0x02;
-				}
-				if (padSelect) {
-					output &= ~0x04;
-				}
-				if (padStart) {
-					output &= ~0x08;
-				}
-			}
+			//if ((data & 0x10) == 0x00) {   // P14
+				//if (padRight) {
+				//	output &= ~1;
+				//}
+				//if (padLeft) {
+				//	output &= ~2;
+				//}
+				//if (padUp) {
+				//	output &= ~4;
+				//}
+				//if (padDown) {
+				//	output &= ~8;
+				//}
+			//}
+			//if ((data & 0x20) == 0x00) {   // P15
+			//	if (padA) {
+			//		output &= ~0x01;
+			//	}
+			//	if (padB) {
+			//		output &= ~0x02;
+			//	}
+			//	if (padSelect) {
+			//		output &= ~0x04;
+			//	}
+			//	if (padStart) {
+			//		output &= ~0x08;
+			//	}
+			//}
 			output |= (data & 0xF0);
 			dmgcpu.memory[0xFF00] = (byte) (output);
 			break;
@@ -209,83 +209,79 @@ class IoHandler {
 			break;
 
 		case 0x10 :           // Sound channel 1, sweep
-			dmgcpu.memory[0xFF10] = (byte) data;
+			//dmgcpu.memory[0xFF10] = (byte) data;
 			break;
 
 		case 0x11 :           // Sound channel 1, length and wave duty
-			dmgcpu.memory[0xFF11] = (byte) data;
+			//dmgcpu.memory[0xFF11] = (byte) data;
 			break;
 
 		case 0x12 :           // Sound channel 1, volume envelope
-			dmgcpu.memory[0xFF12] = (byte) data;
+			//dmgcpu.memory[0xFF12] = (byte) data;
 			break;
 
 		case 0x13 :           // Sound channel 1, frequency low
-			dmgcpu.memory[0xFF13] = (byte) data;
+			//dmgcpu.memory[0xFF13] = (byte) data;
 			break;
 
 		case 0x14 :           // Sound channel 1, frequency high
-			dmgcpu.memory[0xFF14] = (byte) data;
-
+			//dmgcpu.memory[0xFF14] = (byte) data;
 			break;
 
 		case 0x17 :           // Sound channel 2, volume envelope
-			dmgcpu.memory[0xFF17] = (byte) data;
+			//dmgcpu.memory[0xFF17] = (byte) data;
 			break;
 
 		case 0x18 :           // Sound channel 2, frequency low
-			dmgcpu.memory[0xFF18] = (byte) data;
+			//dmgcpu.memory[0xFF18] = (byte) data;
 			break;
 
 		case 0x19 :           // Sound channel 2, frequency high
-			dmgcpu.memory[0xFF19] = (byte) data;
-
+			//dmgcpu.memory[0xFF19] = (byte) data;
 			break;
 
 		case 0x16 :           // Sound channel 2, length and wave duty
-			dmgcpu.memory[0xFF16] = (byte) data;
+			//dmgcpu.memory[0xFF16] = (byte) data;
 			break;
 
 		case 0x1A :           // Sound channel 3, on/off
-			dmgcpu.memory[0xFF1A] = (byte) data;
+			//dmgcpu.memory[0xFF1A] = (byte) data;
 			break;
 
 		case 0x1B :           // Sound channel 3, length
-			dmgcpu.memory[0xFF1B] = (byte) data;
+			//dmgcpu.memory[0xFF1B] = (byte) data;
 			break;
 
 		case 0x1C :           // Sound channel 3, volume
-			dmgcpu.memory[0xFF1C] = (byte) data;
+			//dmgcpu.memory[0xFF1C] = (byte) data;
 			break;
 
 		case 0x1D :           // Sound channel 3, frequency lower 8-bit
-			dmgcpu.memory[0xFF1D] = (byte) data;
+			//dmgcpu.memory[0xFF1D] = (byte) data;
 			break;
 
 		case 0x1E :           // Sound channel 3, frequency higher 3-bit
-			dmgcpu.memory[0xFF1E] = (byte) data;
+			//dmgcpu.memory[0xFF1E] = (byte) data;
 			break;
 
 		case 0x20 :           // Sound channel 4, length
-			dmgcpu.memory[0xFF20] = (byte) data;
+			//dmgcpu.memory[0xFF20] = (byte) data;
 			break;
 
-
 		case 0x21 :           // Sound channel 4, volume envelope
-			dmgcpu.memory[0xFF21] = (byte) data;
+			//dmgcpu.memory[0xFF21] = (byte) data;
 			break;
 
 		case 0x22 :           // Sound channel 4, polynomial parameters
-			dmgcpu.memory[0xFF22] = (byte) data;
+			//dmgcpu.memory[0xFF22] = (byte) data;
 			break;
 
 		case 0x23 :          // Sound channel 4, initial/consecutive
-			dmgcpu.memory[0xFF23] = (byte) data;
+			//dmgcpu.memory[0xFF23] = (byte) data;
 			break;
 
 		case 0x25 :           // Stereo select
-			dmgcpu.memory[0xFF25] = (byte) data;
-
+			//dmgcpu.memory[0xFF25] = (byte) data;
 			break;
 
 		case 0x30 :

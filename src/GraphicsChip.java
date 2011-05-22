@@ -43,9 +43,6 @@ abstract class GraphicsChip {
 	/** Tile is flipped vertically */
 	static final int TILE_FLIPY = 2;
 
-	/** The current contents of the video memory, mapped in at 0x8000 - 0x9FFF */
-	//byte[] videoRam = new byte[0x8000];
-
 	/** The background palette */
 	GameboyPalette backgroundPalette;
 
@@ -115,5 +112,5 @@ abstract class GraphicsChip {
 	abstract public boolean draw(Graphics g, int startX, int startY, Component a);
 	abstract public void notifyScanline(int line);
 	abstract public void invalidateAll();
-	abstract public boolean isFrameReady();
+	//abstract public boolean isFrameReady();
 }
