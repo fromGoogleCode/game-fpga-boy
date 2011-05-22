@@ -93,7 +93,7 @@ class Dmgcpu {
 	public final short INT_P10 =     0x10;
 
 	// 256 bytes at top of RAM are used mainly for registers
-	byte[] oam = new byte[0x100];
+	//byte[] oam = new byte[0x100];
 
 	GraphicsChip graphicsChip;
 	IoHandler ioHandler;
@@ -146,7 +146,8 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-			return graphicsChip.addressRead(addr - 0x8000);
+			return graphicsChip.addressRead(addr);
+			//return memory[addr];
 
 		case 0xC000 :
 		case 0xD000 :
@@ -186,7 +187,8 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-			graphicsChip.addressWrite(addr - 0x8000, (byte) data);
+			graphicsChip.addressWrite(addr, (byte) data);
+			//memory[addr] = (byte) data;
 			break;
 
 		case 0xA000 :

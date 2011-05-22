@@ -56,16 +56,16 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 	/** Reads data from the specified video RAM address */
 	public short addressRead(int addr) {
-		return videoRam[addr + vidRamStart];
+		return dmgcpu.memory[addr + vidRamStart];
 	}
 
 	/** Writes data to the specified video RAM address */
 	public void addressWrite(int addr, byte data) {
 		if (addr < 0x1800) {   // Bkg Tile data area
 			tiles[(addr >> 4) + tileStart].invalidate();
-			videoRam[addr + vidRamStart] = data;
+			dmgcpu.memory[addr + vidRamStart] = data;
 		} else {
-			videoRam[addr + vidRamStart] = data;
+			dmgcpu.memory[addr + vidRamStart] = data;
 		}
 	}
 
@@ -128,7 +128,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 				}
 
 				if (tiles[tileNum].invalid(spriteAttrib)) {
-					tiles[tileNum].validate(videoRam, vidRamAddress, spriteAttrib);
+					tiles[tileNum].validate(dmgcpu.memory, vidRamAddress, spriteAttrib);
 				}
 
 				if ((spriteAttrib & TILE_FLIPY) != 0) {
@@ -143,7 +143,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 				if (doubledSprites) {
 					if (tiles[tileNum + 1].invalid(spriteAttrib)) {
-						tiles[tileNum + 1].validate(videoRam, vidRamAddress + 16, spriteAttrib);
+						tiles[tileNum + 1].validate(dmgcpu.memory, vidRamAddress + 16, spriteAttrib);
 					}
 
 
@@ -223,14 +223,14 @@ class TileBasedGraphicsChip extends GraphicsChip {
 					tileNumAddress = bgStartAddress +
 					                 (((y + yTileOfs) % 32) * 32) + ((x + xTileOfs) % 32);
 
-					tileNum = JavaBoy.unsign(videoRam[tileNumAddress]);
-					attributeData = JavaBoy.unsign(videoRam[tileNumAddress + 0x2000]);
+					tileNum = JavaBoy.unsign(dmgcpu.memory[0x8000 + tileNumAddress]);
+					attributeData = JavaBoy.unsign(dmgcpu.memory[0x8000 + tileNumAddress + 0x2000]);
 				} else {
 					tileNumAddress = bgStartAddress +
 					                 (((y + yTileOfs) % 32) * 32) + ((x + xTileOfs) % 32);
 
-					tileNum = 256 + videoRam[tileNumAddress];
-					attributeData = JavaBoy.unsign(videoRam[tileNumAddress + 0x2000]);
+					tileNum = 256 + dmgcpu.memory[0x8000 + tileNumAddress];
+					attributeData = JavaBoy.unsign(dmgcpu.memory[0x8000 + tileNumAddress + 0x2000]);
 				}
 
 				int attribs = 0;
@@ -251,7 +251,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 
 				if (tiles[tileNum].invalid(attribs)) {
-					tiles[tileNum].validate(videoRam, vidMemAddr, attribs);
+					tiles[tileNum].validate(dmgcpu.memory, vidMemAddr, attribs);
 				}
 				tiles[tileNum].
 				draw(back, (8 * x) - xPixelOfs, (8 * y) - yPixelOfs, attribs);
@@ -301,13 +301,13 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 					//     if (!bgWindowDataSelect) {
 					if (!savedWindowDataSelect) {
-						tileNum = 256 + videoRam[tileAddress];
+						tileNum = 256 + dmgcpu.memory[0x8000 + tileAddress];
 					} else {
-						tileNum = JavaBoy.unsign(videoRam[tileAddress]);
+						tileNum = JavaBoy.unsign(dmgcpu.memory[0x8000 + tileAddress]);
 					}
 					tileDataAddress = tileNum << 4;
 
-					attribData = JavaBoy.unsign(videoRam[tileAddress + 0x2000]);
+					attribData = JavaBoy.unsign(dmgcpu.memory[0x8000 + tileAddress + 0x2000]);
 
 					attribs = (attribData & 0x07) << 2;
 
@@ -325,7 +325,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 					if (wy + y * 8 < windowStopLine) {
 						if (tiles[tileNum].invalid(attribs)) {
-							tiles[tileNum].validate(videoRam, tileDataAddress, attribs);
+							tiles[tileNum].validate(dmgcpu.memory, tileDataAddress, attribs);
 						}
 						tiles[tileNum].draw(back, wx + x * 8, wy + y * 8, attribs);
 					}
@@ -472,7 +472,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		/** Ensure that the tile is valid */
 		public void validate(byte[] videoRam, int offset, int attribs) {
 			if (!valid[attribs]) {
-				updateImage(videoRam, offset, attribs);
+				updateImage(videoRam, offset + 0x8000, attribs);
 			}
 		}
 

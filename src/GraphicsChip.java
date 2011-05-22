@@ -44,7 +44,7 @@ abstract class GraphicsChip {
 	static final int TILE_FLIPY = 2;
 
 	/** The current contents of the video memory, mapped in at 0x8000 - 0x9FFF */
-	byte[] videoRam = new byte[0x8000];
+	//byte[] videoRam = new byte[0x8000];
 
 	/** The background palette */
 	GameboyPalette backgroundPalette;
