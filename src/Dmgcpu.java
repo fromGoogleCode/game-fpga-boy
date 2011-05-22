@@ -158,9 +158,11 @@ class Dmgcpu {
 			if (addr < 0xFE00) {
 				return memory[addr];
 			} else if (addr < 0xFF00) {
-				return (short) (oam[addr - 0xFE00] & 0x00FF);
+				return (short) memory[addr];
+				//return (short) (oam[addr - 0xFE00] & 0x00FF);
 			} else {
-				return ioHandler.ioRead(addr - 0xFF00);
+				return memory[addr];
+				//return ioHandler.ioRead(addr - 0xFF00);
 			}
 
 		default:
@@ -207,7 +209,8 @@ class Dmgcpu {
 				} catch (ArrayIndexOutOfBoundsException e) {
 				}
 			} else if (addr < 0xFF00) {
-				oam[addr - 0xFE00] = (byte) data;
+				//oam[addr - 0xFE00] = (byte) data;
+				memory[addr] = (byte) data;
 			} else {
 				ioHandler.ioWrite(addr - 0xFF00, (short) data);
 			}
@@ -293,8 +296,8 @@ class Dmgcpu {
 	 *  the relevant interrupt vector address
 	 */
 	public final void checkInterrupts() {
-		int intFlags = ioHandler.registers[0x0F];
-		int ieReg = ioHandler.registers[0xFF];
+		int intFlags = memory[0xFF0F];
+		int ieReg = memory[0xFFFF];
 		if ((intFlags & ieReg) != 0) {
 			sp -= 2;
 			addressWrite(sp + 1, pc >> 8);  // Push current program counter onto stack
@@ -318,33 +321,33 @@ class Dmgcpu {
 				intFlags -= INT_P10;
 			} /* Other interrupts go here, not done yet */
 
-			ioHandler.registers[0x0F] = (byte) intFlags;
+			memory[0xFF0F] = (byte) intFlags;
 			//inInterrupt = true;
 		}
 	}
 
 	/** Initiate an interrupt of the specified type */
 	public final void triggerInterrupt(int intr) {
-		ioHandler.registers[0x0F] |= intr;
+		memory[0xFF0F] |= intr;
 	}
 
 	public final void triggerInterruptIfEnabled(int intr) {
-		if ((ioHandler.registers[0xFF] & (short) (intr)) != 0) ioHandler.registers[0x0F] |= intr;
+		if ((memory[0xFFFF] & (short) (intr)) != 0) memory[0xFF0F] |= intr;
 	}
 
 	/** Check for interrupts that need to be initiated */
 	public final void initiateInterrupts() {
 		if (timaEnabled && ((instrCount % instrsPerTima) == 0)) {
-			if (JavaBoy.unsign(ioHandler.registers[05]) == 0) {
-				ioHandler.registers[05] = ioHandler.registers[06]; // Set TIMA modulo
-				if ((ioHandler.registers[0xFF] & INT_TIMA) != 0)
+			if (JavaBoy.unsign(memory[0xFF05]) == 0) {
+				memory[0xFF05] = memory[0xFF06]; // Set TIMA modulo
+				if ((memory[0xFFFF] & INT_TIMA) != 0)
 					triggerInterrupt(INT_TIMA);
 			}
-			ioHandler.registers[05]++;
+			memory[0xFF05]++;
 		}
 
 		if ((instrCount % INSTRS_PER_DIV) == 0) {
-			ioHandler.registers[04]++;
+			memory[0xFF04]++;
 		}
 
 		if ((instrCount % INSTRS_PER_HBLANK) == 0) {
@@ -352,18 +355,18 @@ class Dmgcpu {
 
 			// LCY Coincidence
 			// The +1 is due to the LCY register being just about to be incremented
-			int cline = JavaBoy.unsign(ioHandler.registers[0x44]) + 1;
+			int cline = JavaBoy.unsign(memory[0xFF44]) + 1;
 			if (cline == 152) cline = 0;
 
-			if (((ioHandler.registers[0xFF] & INT_LCDC) != 0) &&
-			                ((ioHandler.registers[0x41] & 64) != 0) &&
-			                (JavaBoy.unsign(ioHandler.registers[0x45]) == cline) && ((ioHandler.registers[0x40] & 0x80) != 0) && (cline < 0x90)) {
+			if (((memory[0xFFFF] & INT_LCDC) != 0) &&
+			                ((memory[0xFF41] & 64) != 0) &&
+			                (JavaBoy.unsign(memory[0xFF45]) == cline) && ((memory[0xFF40] & 0x80) != 0) && (cline < 0x90)) {
 				triggerInterrupt(INT_LCDC);
 			}
 
 			// Trigger on every line
-			if (((ioHandler.registers[0xFF] & INT_LCDC) != 0) &&
-			                ((ioHandler.registers[0x41] & 0x8) != 0) && ((ioHandler.registers[0x40] & 0x80) != 0) && (cline < 0x90) ) {
+			if (((memory[0xFFFF] & INT_LCDC) != 0) &&
+			                ((memory[0xFF41] & 0x8) != 0) && ((memory[0xFF40] & 0x80) != 0) && (cline < 0x90) ) {
 				triggerInterrupt(INT_LCDC);
 			}
 
@@ -371,25 +374,25 @@ class Dmgcpu {
 				ioHandler.performHdma();
 			}
 
-			if (JavaBoy.unsign(ioHandler.registers[0x44]) == 143) {
+			if (JavaBoy.unsign(memory[0xFF44]) == 143) {
 				for (int r = 144; r < 170; r++) {
 					graphicsChip.notifyScanline(r);
 				}
-				if ( ((ioHandler.registers[0x40] & 0x80) != 0) && ((ioHandler.registers[0xFF] & INT_VBLANK) != 0) ) {
+				if ( ((memory[0xFF40] & 0x80) != 0) && ((memory[0xFFFF] & INT_VBLANK) != 0) ) {
 					triggerInterrupt(INT_VBLANK);
-					if ( ((ioHandler.registers[0x41] & 16) != 0) && ((ioHandler.registers[0xFF] & INT_LCDC) != 0) ) {
+					if ( ((memory[0xFF41] & 16) != 0) && ((memory[0xFFFF] & INT_LCDC) != 0) ) {
 						triggerInterrupt(INT_LCDC);
 					}
 				}
 
 			}
 
-			graphicsChip.notifyScanline(JavaBoy.unsign(ioHandler.registers[0x44]));
-			ioHandler.registers[0x44] = (byte) (JavaBoy.unsign(ioHandler.registers[0x44]) + 1);
+			graphicsChip.notifyScanline(JavaBoy.unsign(memory[0xFF44]));
+			memory[0xFF44] = (byte) (JavaBoy.unsign(memory[0xFF44]) + 1);
 
-			if (JavaBoy.unsign(ioHandler.registers[0x44]) >= 153) {
+			if (JavaBoy.unsign(memory[0xFF44]) >= 153) {
 
-				ioHandler.registers[0x44] = 0;
+				memory[0xFF44] = 0;
 				graphicsChip.frameDone = false;
 				((JavaBoy) (applet)).drawNextFrame();
 				try {
@@ -583,8 +586,8 @@ class Dmgcpu {
 				pc+=2;
 
 				//if (gbcFeatures) {
-					if ((ioHandler.registers[0x4D] & 0x01) == 1) {
-						int newKey1Reg = ioHandler.registers[0x4D] & 0xFE;
+					if ((memory[0xFF4D] & 0x01) == 1) {
+						int newKey1Reg = memory[0xFF4D] & 0xFE;
 						if ((newKey1Reg & 0x80) == 0x80) {
 							setDoubleSpeedCpu(false);
 							newKey1Reg &= 0x7F;
@@ -592,7 +595,7 @@ class Dmgcpu {
 							setDoubleSpeedCpu(true);
 							newKey1Reg |= 0x80;
 						}
-						ioHandler.registers[0x4D] = (byte) newKey1Reg;
+						memory[0xFF4D] = (byte) newKey1Reg;
 					}
 				//}
 
@@ -1121,7 +1124,7 @@ class Dmgcpu {
 
 			case 0x76 :               // HALT
 				interruptsEnabled = true;
-				while (ioHandler.registers[0x0F] == 0) {
+				while (memory[0xFF0F] == 0) {
 					initiateInterrupts();
 					instrCount++;
 				}

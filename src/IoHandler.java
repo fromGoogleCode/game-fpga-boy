@@ -29,7 +29,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 class IoHandler {
 
 	/** Data contained in the handled memory area */
-	byte[] registers = new byte[0x100];
+	//byte[] registers = new byte[0x100];
 
 	/** Reference to the current CPU object */
 	Dmgcpu dmgcpu;
@@ -53,10 +53,10 @@ class IoHandler {
 	}
 
 	public void performHdma() {
-		int dmaSrc = (JavaBoy.unsign(registers[0x51]) << 8) +
-		             (JavaBoy.unsign(registers[0x52]) & 0xF0);
-		int dmaDst = ((JavaBoy.unsign(registers[0x53]) & 0x1F) << 8) +
-		             (JavaBoy.unsign(registers[0x54]) & 0xF0) + 0x8000;
+		int dmaSrc = (JavaBoy.unsign(dmgcpu.memory[0xFF51]) << 8) +
+		             (JavaBoy.unsign(dmgcpu.memory[0xFF52]) & 0xF0);
+		int dmaDst = ((JavaBoy.unsign(dmgcpu.memory[0xFF53]) & 0x1F) << 8) +
+		             (JavaBoy.unsign(dmgcpu.memory[0xFF54]) & 0xF0) + 0x8000;
 
 		for (int r = 0; r < 16; r++) {
 			dmgcpu.addressWrite(dmaDst + r, dmgcpu.addressRead(dmaSrc + r));
@@ -64,18 +64,18 @@ class IoHandler {
 
 		dmaSrc += 16;
 		dmaDst += 16;
-		registers[0x51] = (byte) ((dmaSrc & 0xFF00) >> 8);
-		registers[0x52] = (byte) (dmaSrc & 0x00F0);
-		registers[0x53] = (byte) ((dmaDst & 0x1F00) >> 8);
-		registers[0x54] = (byte) (dmaDst & 0x00F0);
+		dmgcpu.memory[0xFF51] = (byte) ((dmaSrc & 0xFF00) >> 8);
+		dmgcpu.memory[0xFF52] = (byte) (dmaSrc & 0x00F0);
+		dmgcpu.memory[0xFF53] = (byte) ((dmaDst & 0x1F00) >> 8);
+		dmgcpu.memory[0xFF54] = (byte) (dmaDst & 0x00F0);
 
-		int len = JavaBoy.unsign(registers[0x55]);
+		int len = JavaBoy.unsign(dmgcpu.memory[0xFF55]);
 		if (len == 0x00) {
-			registers[0x55] = (byte) 0xFF;
+			dmgcpu.memory[0xFF55] = (byte) 0xFF;
 			hdmaRunning = false;
 		} else {
 			len--;
-			registers[0x55] = (byte) len;
+			dmgcpu.memory[0xFF55] = (byte) len;
 		}
 
 	}
@@ -89,14 +89,15 @@ class IoHandler {
 
 			int output = 0;
 
-			if (registers[0x44] == registers[0x45]) {
+			//if (registers[0x44] == registers[0x45]) {
+			if (dmgcpu.memory[0xFF44] == dmgcpu.memory[0xFF45]) {
 				output |= 4;
 			}
 
 			int cyclePos = dmgcpu.instrCount % dmgcpu.INSTRS_PER_HBLANK;
 			int sectionLength = dmgcpu.INSTRS_PER_HBLANK / 6;
 
-			if (JavaBoy.unsign(registers[0x44]) > 144) {
+			if (JavaBoy.unsign(dmgcpu.memory[0xFF44]) > 144) {
 				output |= 1;
 			} else {
 				if (cyclePos <= sectionLength * 3) {
@@ -109,27 +110,27 @@ class IoHandler {
 				}
 			}
 
-			return (byte) (output | (registers[0x41] & 0xF8));
+			return (byte) (output | (dmgcpu.memory[0xFF41] & 0xF8));
 
 		case 0x55 :
-			return (byte) (registers[0x55]);
+			return (byte) (dmgcpu.memory[0xFF55]);
 
 		case 0x69 :       // GBC BG Sprite palette
 
-			int palNumber = (registers[0x68] & 0x38) >> 3;
+			int palNumber = (dmgcpu.memory[0xFF68] & 0x38) >> 3;
 			return dmgcpu.graphicsChip.gbcBackground[palNumber].getGbcColours(
-		               (JavaBoy.unsign(registers[0x68]) & 0x06) >> 1,
-		               (JavaBoy.unsign(registers[0x68]) & 0x01) == 1);
+		               (JavaBoy.unsign(dmgcpu.memory[0xFF68]) & 0x06) >> 1,
+		               (JavaBoy.unsign(dmgcpu.memory[0xFF68]) & 0x01) == 1);
 
 		case 0x6B :       // GBC OBJ Sprite palette
 
-			int index = (registers[0x6A] & 0x38) >> 3;
+			int index = (dmgcpu.memory[0xFF6A] & 0x38) >> 3;
 			return dmgcpu.graphicsChip.gbcSprite[index].getGbcColours(
-		               (JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
-		               (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1);
+		               (JavaBoy.unsign(dmgcpu.memory[0xFF6A]) & 0x06) >> 1,
+		               (JavaBoy.unsign(dmgcpu.memory[0xFF6A]) & 0x01) == 1);
 
 		default:
-			return registers[num];
+			return dmgcpu.memory[(0xFF << 8) + num];
 		}
 	}
 
@@ -168,24 +169,24 @@ class IoHandler {
 				}
 			}
 			output |= (data & 0xF0);
-			registers[0x00] = (byte) (output);
+			dmgcpu.memory[0xFF00] = (byte) (output);
 			break;
 
 		case 0x02 :           // Serial
 
-			registers[0x02] = (byte) data;
+			dmgcpu.memory[0xFF02] = (byte) data;
 
 
-			if ((registers[0x02] & 0x01) == 1) {
-				registers[0x01] = (byte) 0xFF; // when no LAN connection, always receive 0xFF from port.  Simulates empty socket.
+			if ((dmgcpu.memory[0xFF02] & 0x01) == 1) {
+				dmgcpu.memory[0xFF01] = (byte) 0xFF; // when no LAN connection, always receive 0xFF from port.  Simulates empty socket.
 				if (dmgcpu.running) dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_SER);
-				registers[0x02] &= 0x7F;
+				dmgcpu.memory[0xFF02] &= 0x7F;
 			}
 
 			break;
 
 		case 0x04 :           // DIV
-			registers[04] = 0;
+			dmgcpu.memory[0xFF04] = 0;
 			break;
 
 		case 0x07 :           // TAC
@@ -211,82 +212,82 @@ class IoHandler {
 			break;
 
 		case 0x10 :           // Sound channel 1, sweep
-			registers[0x10] = (byte) data;
+			dmgcpu.memory[0xFF10] = (byte) data;
 			break;
 
 		case 0x11 :           // Sound channel 1, length and wave duty
-			registers[0x11] = (byte) data;
+			dmgcpu.memory[0xFF11] = (byte) data;
 			break;
 
 		case 0x12 :           // Sound channel 1, volume envelope
-			registers[0x12] = (byte) data;
+			dmgcpu.memory[0xFF12] = (byte) data;
 			break;
 
 		case 0x13 :           // Sound channel 1, frequency low
-			registers[0x13] = (byte) data;
+			dmgcpu.memory[0xFF13] = (byte) data;
 			break;
 
 		case 0x14 :           // Sound channel 1, frequency high
-			registers[0x14] = (byte) data;
+			dmgcpu.memory[0xFF14] = (byte) data;
 
 			break;
 
 		case 0x17 :           // Sound channel 2, volume envelope
-			registers[0x17] = (byte) data;
+			dmgcpu.memory[0xFF17] = (byte) data;
 			break;
 
 		case 0x18 :           // Sound channel 2, frequency low
-			registers[0x18] = (byte) data;
+			dmgcpu.memory[0xFF18] = (byte) data;
 			break;
 
 		case 0x19 :           // Sound channel 2, frequency high
-			registers[0x19] = (byte) data;
+			dmgcpu.memory[0xFF19] = (byte) data;
 
 			break;
 
 		case 0x16 :           // Sound channel 2, length and wave duty
-			registers[0x16] = (byte) data;
+			dmgcpu.memory[0xFF16] = (byte) data;
 			break;
 
 		case 0x1A :           // Sound channel 3, on/off
-			registers[0x1A] = (byte) data;
+			dmgcpu.memory[0xFF1A] = (byte) data;
 			break;
 
 		case 0x1B :           // Sound channel 3, length
-			registers[0x1B] = (byte) data;
+			dmgcpu.memory[0xFF1B] = (byte) data;
 			break;
 
 		case 0x1C :           // Sound channel 3, volume
-			registers[0x1C] = (byte) data;
+			dmgcpu.memory[0xFF1C] = (byte) data;
 			break;
 
 		case 0x1D :           // Sound channel 3, frequency lower 8-bit
-			registers[0x1D] = (byte) data;
+			dmgcpu.memory[0xFF1D] = (byte) data;
 			break;
 
 		case 0x1E :           // Sound channel 3, frequency higher 3-bit
-			registers[0x1E] = (byte) data;
+			dmgcpu.memory[0xFF1E] = (byte) data;
 			break;
 
 		case 0x20 :           // Sound channel 4, length
-			registers[0x20] = (byte) data;
+			dmgcpu.memory[0xFF20] = (byte) data;
 			break;
 
 
 		case 0x21 :           // Sound channel 4, volume envelope
-			registers[0x21] = (byte) data;
+			dmgcpu.memory[0xFF21] = (byte) data;
 			break;
 
 		case 0x22 :           // Sound channel 4, polynomial parameters
-			registers[0x22] = (byte) data;
+			dmgcpu.memory[0xFF22] = (byte) data;
 			break;
 
 		case 0x23 :          // Sound channel 4, initial/consecutive
-			registers[0x23] = (byte) data;
+			dmgcpu.memory[0xFF23] = (byte) data;
 			break;
 
 		case 0x25 :           // Stereo select
-			registers[0x25] = (byte) data;
+			dmgcpu.memory[0xFF25] = (byte) data;
 
 			break;
 
@@ -306,7 +307,7 @@ class IoHandler {
 		case 0x3D :
 		case 0x3E :
 		case 0x3F :
-			registers[num] = (byte) data;
+			dmgcpu.memory[(0xFF << 8)+ num] = (byte) data;
 			break;
 
 		case 0x40 :           // LCDC
@@ -347,19 +348,19 @@ class IoHandler {
 				dmgcpu.graphicsChip.winEnabled = false;
 			}
 
-			registers[0x40] = (byte) data;
+			dmgcpu.memory[0xFF40] = (byte) data;
 			break;
 
 		case 0x41 :
-			registers[0x41] = (byte) data;
+			dmgcpu.memory[0xFF41] = (byte) data;
 			break;
 
 		case 0x42 :           // SCY
-			registers[0x42] = (byte) data;
+			dmgcpu.memory[0xFF42] = (byte) data;
 			break;
 
 		case 0x43 :           // SCX
-			registers[0x43] = (byte) data;
+			dmgcpu.memory[0xFF43] = (byte) data;
 			break;
 
 		case 0x46 :           // DMA
@@ -374,22 +375,22 @@ class IoHandler {
 			break;
 		case 0x47 :           // FF47 - BKG and WIN palette
 			dmgcpu.graphicsChip.backgroundPalette.decodePalette(data);
-			if (registers[num] != (byte) data) {
-				registers[num] = (byte) data;
+			if (dmgcpu.memory[(0xFF << 8) + num] != (byte) data) {
+				dmgcpu.memory[(0xFF << 8) + num] = (byte) data;
 				dmgcpu.graphicsChip.invalidateAll(GraphicsChip.TILE_BKG);
 			}
 			break;
 		case 0x48 :           // FF48 - OBJ1 palette
 			dmgcpu.graphicsChip.obj1Palette.decodePalette(data);
-			if (registers[num] != (byte) data) {
-				registers[num] = (byte) data;
+			if (dmgcpu.memory[(0xFF << 8) + num] != (byte) data) {
+				dmgcpu.memory[(0xFF << 8) + num] = (byte) data;
 				dmgcpu.graphicsChip.invalidateAll(GraphicsChip.TILE_OBJ1);
 			}
 			break;
 		case 0x49 :           // FF49 - OBJ2 palette
 			dmgcpu.graphicsChip.obj2Palette.decodePalette(data);
-			if (registers[num] != (byte) data) {
-				registers[num] = (byte) data;
+			if (dmgcpu.memory[(0xFF << 8) + num] != (byte) data) {
+				dmgcpu.memory[(0xFF << 8) + num] = (byte) data;
 				dmgcpu.graphicsChip.invalidateAll(GraphicsChip.TILE_OBJ2);
 			}
 			break;
@@ -397,16 +398,16 @@ class IoHandler {
 		case 0x4F :
 			dmgcpu.graphicsChip.tileStart = (data & 0x01) * 384;
 			dmgcpu.graphicsChip.vidRamStart = (data & 0x01) * 0x2000;
-			registers[0x4F] = (byte) data;
+			dmgcpu.memory[0xFF4F] = (byte) data;
 			break;
 
 
 		case 0x55 :
-			if ((!hdmaRunning) && ((registers[0x55] & 0x80) == 0) && ((data & 0x80) == 0) ) {
-				int dmaSrc = (JavaBoy.unsign(registers[0x51]) << 8) +
-				             (JavaBoy.unsign(registers[0x52]) & 0xF0);
-				int dmaDst = ((JavaBoy.unsign(registers[0x53]) & 0x1F) << 8) +
-				             (JavaBoy.unsign(registers[0x54]) & 0xF0) + 0x8000;
+			if ((!hdmaRunning) && ((dmgcpu.memory[0xFF55] & 0x80) == 0) && ((data & 0x80) == 0) ) {
+				int dmaSrc = (JavaBoy.unsign(dmgcpu.memory[0xFF51]) << 8) +
+				             (JavaBoy.unsign(dmgcpu.memory[0xFF52]) & 0xF0);
+				int dmaDst = ((JavaBoy.unsign(dmgcpu.memory[0xFF53]) & 0x1F) << 8) +
+				             (JavaBoy.unsign(dmgcpu.memory[0xFF54]) & 0xF0) + 0x8000;
 				int dmaLen = ((JavaBoy.unsign(data) & 0x7F) * 16) + 16;
 
 				if (dmaLen > 2048) dmaLen = 2048;
@@ -417,48 +418,48 @@ class IoHandler {
 			} else {
 				if ((JavaBoy.unsign(data) & 0x80) == 0x80) {
 					hdmaRunning = true;
-					registers[0x55] = (byte) (data & 0x7F);
+					dmgcpu.memory[0xFF55] = (byte) (data & 0x7F);
 					break;
 				} else if ((hdmaRunning) && ((JavaBoy.unsign(data) & 0x80) == 0)) {
 					hdmaRunning = false;
 				}
 			}
 
-			registers[0x55] = (byte) data;
+			dmgcpu.memory[0xFF55] = (byte) data;
 			break;
 
 		case 0x69 :           // FF69 - BCPD: GBC BG Palette data write
 
-			int palNumber = (registers[0x68] & 0x38) >> 3;
+			int palNumber = (dmgcpu.memory[0xFF68] & 0x38) >> 3;
 			dmgcpu.graphicsChip.gbcBackground[palNumber].setGbcColours(
-			        (JavaBoy.unsign(registers[0x68]) & 0x06) >> 1,
-			        (JavaBoy.unsign(registers[0x68]) & 0x01) == 1, JavaBoy.unsign(data));
+			        (JavaBoy.unsign(dmgcpu.memory[0xFF68]) & 0x06) >> 1,
+			        (JavaBoy.unsign(dmgcpu.memory[0xFF68]) & 0x01) == 1, JavaBoy.unsign(data));
 			dmgcpu.graphicsChip.invalidateAll(palNumber * 4);
 
-			if ((JavaBoy.unsign(registers[0x68]) & 0x80) != 0) {
-				registers[0x68]++;
+			if ((JavaBoy.unsign(dmgcpu.memory[0xFF68]) & 0x80) != 0) {
+				dmgcpu.memory[0xFF68]++;
 			}
 
-			registers[0x69] = (byte) data;
+			dmgcpu.memory[0xFF69] = (byte) data;
 			break;
 
 		case 0x6B :           // FF6B - OCPD: GBC Sprite Palette data write
 
-			int index = (registers[0x6A] & 0x38) >> 3;
+			int index = (dmgcpu.memory[0xFF6A] & 0x38) >> 3;
 			dmgcpu.graphicsChip.gbcSprite[index].setGbcColours(
-			        (JavaBoy.unsign(registers[0x6A]) & 0x06) >> 1,
-			        (JavaBoy.unsign(registers[0x6A]) & 0x01) == 1, JavaBoy.unsign(data));
+			        (JavaBoy.unsign(dmgcpu.memory[0xFF6A]) & 0x06) >> 1,
+			        (JavaBoy.unsign(dmgcpu.memory[0xFF6A]) & 0x01) == 1, JavaBoy.unsign(data));
 			dmgcpu.graphicsChip.invalidateAll((index * 4) + 32);
 
-			if ((JavaBoy.unsign(registers[0x6A]) & 0x80) != 0) {
-				if ((registers[0x6A] & 0x3F) == 0x3F) {
-					registers[0x6A] = (byte) 0x80;
+			if ((JavaBoy.unsign(dmgcpu.memory[0xFF6A]) & 0x80) != 0) {
+				if ((dmgcpu.memory[0xFF6A] & 0x3F) == 0x3F) {
+					dmgcpu.memory[0xFF6A] = (byte) 0x80;
 				} else {
-					registers[0x6A]++;
+					dmgcpu.memory[0x6A]++;
 				}
 			}
 
-			registers[0x6B] = (byte) data;
+			dmgcpu.memory[0xFF6B] = (byte) data;
 			break;
 
 
@@ -469,11 +470,11 @@ class IoHandler {
 				System.out.println("Chegou aqui amigo...");
 				dmgcpu.gbcRamBank = data & 0x07;
 			}
-			registers[0x70] = (byte) data;
+			dmgcpu.memory[0xFF70] = (byte) data;
 			break;
 
 		default:
-			registers[num] = (byte) data;
+			dmgcpu.memory[(0xFF << 8) + num] = (byte) data;
 			break;
 		}
 	}

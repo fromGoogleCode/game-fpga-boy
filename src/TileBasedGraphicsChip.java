@@ -191,12 +191,12 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		// first line the window is to be displayed.  Will work unless this is changed
 		// after window is started
 		// NOTE: Still no real support for hblank effects on window/sprites
-		if (line == JavaBoy.unsign(dmgcpu.ioHandler.registers[0x4A]) + 1) {		// Compare against WY reg
+		if (line == JavaBoy.unsign(dmgcpu.memory[0xFF4A]) + 1) {		// Compare against WY reg
 			savedWindowDataSelect = bgWindowDataSelect;
 		}
 
-		int xPixelOfs = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x43]) % 8;
-		int yPixelOfs = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x42]) % 8;
+		int xPixelOfs = JavaBoy.unsign(dmgcpu.memory[0xFF43]) % 8;
+		int yPixelOfs = JavaBoy.unsign(dmgcpu.memory[0xFF42]) % 8;
 
 		if ( ((yPixelOfs + line) % 8 == 4) || (line == 0)) {
 
@@ -204,8 +204,8 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 			Graphics back = backBuffer.getGraphics();
 
-			int xTileOfs = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x43]) / 8;
-			int yTileOfs = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x42]) / 8;
+			int xTileOfs = JavaBoy.unsign(dmgcpu.memory[0xFF43]) / 8;
+			int yTileOfs = JavaBoy.unsign(dmgcpu.memory[0xFF42]) / 8;
 			int bgStartAddress, tileNum;
 
 			int y = ((line + yPixelOfs) / 8);
@@ -294,13 +294,13 @@ class TileBasedGraphicsChip extends GraphicsChip {
 			int wx, wy;
 			int windowStartAddress;
 
-			if ((dmgcpu.ioHandler.registers[0x40] & 0x40) != 0) {
+			if ((dmgcpu.memory[0xFF40] & 0x40) != 0) {
 				windowStartAddress = 0x1C00;
 			} else {
 				windowStartAddress = 0x1800;
 			}
-			wx = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x4B]) - 7;
-			wy = JavaBoy.unsign(dmgcpu.ioHandler.registers[0x4A]);
+			wx = JavaBoy.unsign(dmgcpu.memory[0xFF4B]) - 7;
+			wy = JavaBoy.unsign(dmgcpu.memory[0xFF4A]);
 
 			back.setColor(new Color(backgroundPalette.getRgbEntry(0)));
 			back.fillRect(wx, wy, 160, 144);
