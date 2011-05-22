@@ -28,9 +28,6 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class IoHandler {
 
-	/** Data contained in the handled memory area */
-	//byte[] registers = new byte[0x100];
-
 	/** Reference to the current CPU object */
 	Dmgcpu dmgcpu;
 

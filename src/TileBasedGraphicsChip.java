@@ -268,24 +268,11 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 	public boolean isFrameReady() {
 		return true;
-		//System.out.println("FRamesdrawn = " + framesDrawn + " frameskip = " + frameSkip);
-		//System.out.println("MOD is " + framesDrawn % frameSkip);
-		//return (framesDrawn % frameSkip) == 0;
 	}
 
 	/** Draw the current graphics frame into the given graphics context */
 	public boolean draw(Graphics g, int startX, int startY, Component a) {
 		int tileNum;
-
-		//if ((framesDrawn % frameSkip) != 0) {
-		//	System.out.println("FRamesdrawn = " + framesDrawn + " frameskip = " + frameSkip);
-		//	System.out.println("MOD is " + framesDrawn % frameSkip);
-		//	frameDone = true;
-		//	framesDrawn++;
-		//	return false;
-		//} else {
-		//	framesDrawn++;
-		//}
 
 		Graphics back = backBuffer.getGraphics();
 

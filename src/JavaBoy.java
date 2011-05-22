@@ -59,26 +59,17 @@ public class JavaBoy extends java.applet.Applet implements Runnable, KeyListener
 	public void paint(Graphics g) {
 		if (dmgcpu != null) {
 
-			// Center the GB image
-			//int x = 0;
-			//int y = 0;
-
 			if (!fullFrame) {
 				dmgcpu.graphicsChip.draw(g, 0, 0, this);
 			} else {
 				Graphics bufferGraphics = doubleBuffer.getGraphics();
 
-				if (dmgcpu.graphicsChip.isFrameReady()) {
-					bufferGraphics.setColor(new Color(255, 255, 255));
-					bufferGraphics.fillRect(0, 0, 160, 144);
+				bufferGraphics.setColor(new Color(255, 255, 255));
+				bufferGraphics.fillRect(0, 0, 160, 144);
 
-					dmgcpu.graphicsChip.draw(bufferGraphics, 0, 0, this);
+				dmgcpu.graphicsChip.draw(bufferGraphics, 0, 0, this);
 
-					g.drawImage(doubleBuffer, 0, 0, this);
-				} else {
-					dmgcpu.graphicsChip.draw(bufferGraphics, 0, 0, this);
-				}
-
+				g.drawImage(doubleBuffer, 0, 0, this);
 			}
 		} else {
 			g.setColor(new Color(0,0,0));

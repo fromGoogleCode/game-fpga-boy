@@ -113,7 +113,6 @@ class Dmgcpu {
 			InputStream is = new FileInputStream(new File("../roms/rom.gb"));
 			is.read(memory, 0, 0x8000); // Read the entire ROM
 			is.close();
-			//System.arraycopy(rom, 0, memory, 0, rom.length);
 		} catch (IOException e) {
 			System.out.println("Error opening ROM image");
 		}
@@ -159,10 +158,8 @@ class Dmgcpu {
 				return memory[addr];
 			} else if (addr < 0xFF00) {
 				return (short) memory[addr];
-				//return (short) (oam[addr - 0xFE00] & 0x00FF);
 			} else {
 				return memory[addr];
-				//return ioHandler.ioRead(addr - 0xFF00);
 			}
 
 		default:
@@ -209,15 +206,12 @@ class Dmgcpu {
 				} catch (ArrayIndexOutOfBoundsException e) {
 				}
 			} else if (addr < 0xFF00) {
-				//oam[addr - 0xFE00] = (byte) data;
 				memory[addr] = (byte) data;
 			} else {
 				ioHandler.ioWrite(addr - 0xFF00, (short) data);
 			}
 			break;
 		}
-
-
 	}
 
 	/** Performs a read of a register by internal register number */
@@ -1834,9 +1828,6 @@ class Dmgcpu {
 			if (interruptsEnabled) {
 				checkInterrupts();
 			}
-
-			//cartridge.update();
-
 
 			initiateInterrupts();
 
