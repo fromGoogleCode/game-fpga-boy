@@ -243,9 +243,6 @@ class IoHandler {
 			int sourceAddress = (data << 8);
 
 			// This could be speed up using System.arrayCopy, but hey.
-			//for (int i = 0x00; i < 0xA0; i++) {
-			//	dmgcpu.addressWrite(0xFE00 + i, dmgcpu.addressRead(sourceAddress + i));
-			//}
 			System.arraycopy(dmgcpu.memory, sourceAddress, dmgcpu.memory, 0xFE00, 0xA0);
 			// This is meant to be run at the same time as the CPU is executing
 			// instructions, but I don't think it's crucial.

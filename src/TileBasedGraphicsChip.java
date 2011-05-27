@@ -63,14 +63,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 	}
 
-	/** Set the size of the Gameboy window. */
-	public void setMagnify() {
-		super.setMagnify();
-		for (int r = 0; r < 384 * 2; r++) {
-			tiles[r].setMagnify();
-		}
-	}
-
 	/** Draw sprites into the back buffer which have the given priority */
 	public void drawSprites(Graphics back, int priority) {
 
@@ -232,7 +224,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 	}
 
-	/** Clears the frame buffer to the background colour */
+	/** Clears the frame buffer to the background color */
 	public void clearFrameBuffer() {
 		Graphics back = backBuffer.getGraphics();
 		back.setColor(new Color(backgroundPalette.getRgbEntry(0)));
@@ -268,7 +260,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 				for (int x = 0; x < 21 - (wx / 8); x++) {
 					tileAddress = windowStartAddress + (y * 32) + x;
 
-					//     if (!bgWindowDataSelect) {
 					if (!savedWindowDataSelect) {
 						tileNum = 256 + dmgcpu.memory[0x8000 + tileAddress];
 					} else {
@@ -345,9 +336,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 		/** Allocate memory for the tile image with the specified attributes */
 		public void allocateImage(int attribs, Component a) {
-			source[attribs] = new MemoryImageSource(8 * magnify, 8 * magnify,
-			                                        new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000),
-			                                        imageData, 0, 8 * magnify);
+			source[attribs] = new MemoryImageSource(8, 8, new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000), imageData, 0, 8);
 			source[attribs].setAnimated(true);
 			image[attribs] = a.createImage(source[attribs]);
 		}
@@ -419,12 +408,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 						}
 					}
 
-					for (int cy = 0; cy < magnify; cy++) {
-						for (int cx = 0; cx < magnify; cx++) {
-							imageData[(y * 8 * magnify * magnify) + (cy * 8 * magnify) +
-							          (x * magnify) + cx] = rgbValue;
-						}
-					}
+					imageData[(y * 8) + x] = rgbValue;
 
 				}
 			}
@@ -435,7 +419,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 		/** Draw the tile with the specified attributes into the graphics context given */
 		public void draw(Graphics g, int x, int y, int attribs) {
-			g.drawImage(image[attribs], x * magnify, y * magnify, null);
+			g.drawImage(image[attribs], x, y, null);
 		}
 
 		/** Ensure that the tile is valid */
