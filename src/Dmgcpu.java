@@ -60,7 +60,7 @@ class Dmgcpu {
 	 *  per frame.
 	 */
 	short INSTRS_PER_HBLANK = 60;
-	short INSTRS_PER_DIV = 33; /** Used to set the speed of DIV increments */
+	short INSTRS_PER_DIV = 33; // Used to set the speed of DIV increments
 
 	// Constants for interrupts
 	public final short INT_VBLANK =  0x01; // Vertical blank interrupt
@@ -92,6 +92,7 @@ class Dmgcpu {
 		applet = a;
 	}
 
+	/*
 	public final short addressRead(int addr) {
 
 		addr = addr & 0xFFFF;
@@ -109,27 +110,21 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-			return memory[addr + graphicsChip.vidRamStart];
+			return memory[addr];
+			//return memory[addr + graphicsChip.vidRamStart];
 
 		case 0xC000 :
 		case 0xD000 :
 		case 0xE000 :
-			return memory[addr];
-
 		case 0xF000 :
-			if (addr < 0xFE00) {
-				return memory[addr];
-			} else if (addr < 0xFF00) {
-				return (short) memory[addr];
-			} else {
-				return memory[addr];
-			}
+			return memory[addr];
 
 		default:
 			return 0xFF;
 		}
 
 	}
+	*/
 
 	/** Performs a CPU address space write.  Maps all of the relevant object into the right parts of
 	 *  memory.
@@ -149,7 +144,8 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-				memory[addr + graphicsChip.vidRamStart] = (byte) data;
+				//memory[addr + graphicsChip.vidRamStart] = (byte) data;
+				memory[addr] = (byte) data;
 			break;
 
 		case 0xA000 :
@@ -335,9 +331,10 @@ class Dmgcpu {
 					break;
 	
 				case 0xFF4F :
-					graphicsChip.tileStart = (data & 0x01) * 384;
-					graphicsChip.vidRamStart = (data & 0x01) * 0x2000;
-					memory[0xFF4F] = (byte) data;
+					//System.out.println("LALALALALALA");
+					//graphicsChip.tileStart = (data & 0x01) * 384;
+					//graphicsChip.vidRamStart = (data & 0x01) * 0x2000;
+					//memory[0xFF4F] = (byte) data;
 					break;
 	
 	
@@ -404,7 +401,7 @@ class Dmgcpu {
 		case 3  : return e;
 		case 4  : return (short) ((hl & 0xFF00) >> 8);
 		case 5  : return (short) (hl & 0x00FF);
-		case 6  : return JavaBoy.unsign(addressRead(hl));
+		case 6  : return JavaBoy.unsign(memory[hl]);
 		case 7  : return a;
 		default : return -1;
 		}
@@ -565,9 +562,9 @@ class Dmgcpu {
 
 			instrCount++;
 
-			b1 = JavaBoy.unsign(addressRead(pc));
-			offset = addressRead(pc + 1);
-			b3 = JavaBoy.unsign(addressRead(pc + 2));
+			b1 = JavaBoy.unsign(memory[pc]);
+			offset = memory[pc + 1];
+			b3 = JavaBoy.unsign(memory[pc + 2]);
 			b2 = JavaBoy.unsign((short) offset);
 
 			switch (b1) {
@@ -662,7 +659,7 @@ class Dmgcpu {
 				break;
 			case 0x0A :               // LD A, (BC)
 				pc++;
-				a = JavaBoy.unsign(addressRead((b << 8) + c));
+				a = JavaBoy.unsign(memory[(b << 8) + c]);
 				break;
 			case 0x0B :               // DEC BC
 				pc++;
@@ -834,7 +831,7 @@ class Dmgcpu {
 				break;
 			case 0x1A :               // LD A, (DE)
 				pc++;
-				a = JavaBoy.unsign(addressRead((d << 8) + e));
+				a = JavaBoy.unsign(memory[(d << 8) + e]);
 				break;
 			case 0x1B :               // DEC DE
 				pc++;
@@ -1070,7 +1067,7 @@ class Dmgcpu {
 				break;
 			case 0x2A :               // LDI A, (HL)
 				pc++;
-				a = JavaBoy.unsign(addressRead(hl));
+				a = JavaBoy.unsign(memory[hl]);
 				hl++;
 				break;
 			case 0x2B :               // DEC HL
@@ -1146,7 +1143,7 @@ class Dmgcpu {
 			case 0x34 :               // INC (HL)
 				pc++;
 				f &= F_CARRY;
-				dat = JavaBoy.unsign(addressRead(hl));
+				dat = JavaBoy.unsign(memory[hl]);
 				switch (dat) {
 				case 0xFF: f |= F_HALFCARRY + F_ZERO;
 					addressWrite(hl, 0x00);
@@ -1162,7 +1159,7 @@ class Dmgcpu {
 				pc++;
 				f &= F_CARRY;
 				f |= F_SUBTRACT;
-				dat = JavaBoy.unsign(addressRead(hl));
+				dat = JavaBoy.unsign(memory[hl]);
 				switch (dat) {
 				case 0x00: f |= F_HALFCARRY;
 					addressWrite(hl, 0xFF);
@@ -1205,7 +1202,7 @@ class Dmgcpu {
 				break;
 			case 0x3A :               // LD A, (HL-)
 				pc++;
-				a = JavaBoy.unsign(addressRead(hl));
+				a = JavaBoy.unsign(memory[hl]);
 				hl = (hl - 1) & 0xFFFF;
 				break;
 			case 0x3B :               // DEC SP
@@ -1282,7 +1279,7 @@ class Dmgcpu {
 				break;
 			case 0xC0 :               // RET NZ
 				if ((f & F_ZERO) == 0) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 					sp += 2;
 				} else {
 					pc++;
@@ -1290,8 +1287,8 @@ class Dmgcpu {
 				break;
 			case 0xC1 :               // POP BC
 				pc++;
-				c = JavaBoy.unsign(addressRead(sp));
-				b = JavaBoy.unsign(addressRead(sp + 1));
+				c = JavaBoy.unsign(memory[sp]);
+				b = JavaBoy.unsign(memory[sp + 1]);
 				sp+=2;
 				break;
 			case 0xC2 :               // JP NZ, nnnn
@@ -1351,14 +1348,14 @@ class Dmgcpu {
 				break;
 			case 0xC8 :               // RET Z
 				if ((f & F_ZERO) == F_ZERO) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 					sp += 2;
 				} else {
 					pc++;
 				}
 				break;
 			case 0xC9 :               // RET
-				pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+				pc = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 				sp += 2;
 				break;
 			case 0xCA :               // JP Z, nnnn
@@ -1580,7 +1577,7 @@ class Dmgcpu {
 				break;
 			case 0xD0 :               // RET NC
 				if ((f & F_CARRY) == 0) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 					sp += 2;
 				} else {
 					pc++;
@@ -1588,8 +1585,8 @@ class Dmgcpu {
 				break;
 			case 0xD1 :               // POP DE
 				pc++;
-				e = JavaBoy.unsign(addressRead(sp));
-				d = JavaBoy.unsign(addressRead(sp + 1));
+				e = JavaBoy.unsign(memory[sp]);
+				d = JavaBoy.unsign(memory[sp + 1]);
 				sp+=2;
 				break;
 			case 0xD2 :               // JP NC, nnnn
@@ -1645,7 +1642,7 @@ class Dmgcpu {
 				break;
 			case 0xD8 :               // RET C
 				if ((f & F_CARRY) == F_CARRY) {
-					pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+					pc = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 					sp += 2;
 				} else {
 					pc++;
@@ -1654,7 +1651,7 @@ class Dmgcpu {
 			case 0xD9 :               // RETI
 				interruptsEnabled = true;
 				//inInterrupt = false;
-				pc = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+				pc = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 				sp += 2;
 				break;
 			case 0xDA :               // JP C, nnnn
@@ -1710,7 +1707,7 @@ class Dmgcpu {
 				break;
 			case 0xE1 :               // POP HL
 				pc++;
-				hl = (JavaBoy.unsign(addressRead(sp + 1)) << 8) + JavaBoy.unsign(addressRead(sp));
+				hl = (JavaBoy.unsign(memory[sp + 1]) << 8) + JavaBoy.unsign(memory[sp]);
 				sp += 2;
 				break;
 			case 0xE2 :               // LDH (FF00 + C), A
@@ -1776,17 +1773,17 @@ class Dmgcpu {
 				break;
 			case 0xF0 :               // LDH A, (FFnn)
 				pc += 2;
-				a = JavaBoy.unsign(addressRead(0xFF00 + b2));
+				a = JavaBoy.unsign(memory[0xFF00 + b2]);
 				break;
 			case 0xF1 :               // POP AF
 				pc++;
-				f = JavaBoy.unsign(addressRead(sp));
-				a = JavaBoy.unsign(addressRead(sp + 1));
+				f = JavaBoy.unsign(memory[sp]);
+				a = JavaBoy.unsign(memory[sp + 1]);
 				sp+=2;
 				break;
 			case 0xF2 :               // LD A, (FF00 + C)
 				pc++;
-				a = JavaBoy.unsign(addressRead(0xFF00 + c));
+				a = JavaBoy.unsign(memory[0xFF00 + c]);
 				break;
 			case 0xF3 :               // DI
 				pc++;
@@ -1831,7 +1828,7 @@ class Dmgcpu {
 				break;
 			case 0xFA :               // LD A, (nnnn)
 				pc+=3;
-				a = JavaBoy.unsign(addressRead((b3 << 8) + b2));
+				a = JavaBoy.unsign(memory[(b3 << 8) + b2]);
 				break;
 			case 0xFB :               // EI
 				pc++;

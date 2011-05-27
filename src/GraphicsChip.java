@@ -64,7 +64,7 @@ abstract class GraphicsChip {
 	Dmgcpu dmgcpu;
 	Component applet;
 	int tileStart = 0;
-	int vidRamStart = 0;
+	//int vidRamStart = 0;
 
 	/** Create a new GraphicsChip connected to the specified CPU */
 	public GraphicsChip(Component a, Dmgcpu d) {

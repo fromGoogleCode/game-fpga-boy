@@ -70,10 +70,10 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 		// Draw sprites
 		for (int i = 0; i < 40; i++) {
-			int spriteX		= dmgcpu.addressRead(0xFE01 + (i * 4)) - 8;
-			int spriteY		= dmgcpu.addressRead(0xFE00 + (i * 4)) - 16;
-			int tileNum		= dmgcpu.addressRead(0xFE02 + (i * 4));
-			int attributes	= dmgcpu.addressRead(0xFE03 + (i * 4));
+			int spriteX		= dmgcpu.memory[0xFE01 + (i * 4)] - 8;
+			int spriteY		= dmgcpu.memory[0xFE00 + (i * 4)] - 16;
+			int tileNum		= dmgcpu.memory[0xFE02 + (i * 4)];
+			int attributes	= dmgcpu.memory[0xFE03 + (i * 4)];
 
 			if ((attributes & 0x80) >> 7 == priority) {
 
