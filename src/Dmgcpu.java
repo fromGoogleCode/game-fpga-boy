@@ -441,7 +441,6 @@ class Dmgcpu {
 
 	/** Resets the CPU to it's power on state.  Memory contents are not cleared. */
 	public void reset() {
-		//graphicsChip.dispose();
 		interruptsEnabled = false;
 		ieDelay = -1;
 		pc = 0x0100;
