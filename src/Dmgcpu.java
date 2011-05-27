@@ -92,10 +92,6 @@ class Dmgcpu {
 		applet = a;
 	}
 
-	//public void dispose() {
-	//	graphicsChip.dispose();
-	//}
-
 	public final short addressRead(int addr) {
 
 		addr = addr & 0xFFFF;
@@ -312,8 +308,6 @@ class Dmgcpu {
 	
 				case 0xFF46 :           // DMA
 					int sourceAddress = (data << 8);
-	
-					// This could be speed up using System.arrayCopy, but hey.
 					System.arraycopy(memory, sourceAddress, memory, 0xFE00, 0xA0);
 					// This is meant to be run at the same time as the CPU is executing
 					// instructions, but I don't think it's crucial.
