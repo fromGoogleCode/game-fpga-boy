@@ -66,32 +66,19 @@ class Dmgcpu {
 	 *  per frame.
 	 */
 	short INSTRS_PER_HBLANK = 60;
-
-	/** Used to set the speed of DIV increments */
-	short INSTRS_PER_DIV = 33;
+	short INSTRS_PER_DIV = 33; /** Used to set the speed of DIV increments */
 
 	// Constants for interrupts
+	public final short INT_VBLANK =  0x01; /** Vertical blank interrupt */
+	public final short INT_LCDC =    0x02; /** LCD Coincidence interrupt */
+	public final short INT_TIMA =    0x04; /** TIMA (programmable timer) interrupt */
+	public final short INT_SER =     0x08; /** Serial interrupt */
+	public final short INT_P10 =     0x10; /** P10 - P13 (Joypad) interrupt */
 
-	/** Vertical blank interrupt */
-	public final short INT_VBLANK =  0x01;
-
-	/** LCD Coincidence interrupt */
-	public final short INT_LCDC =    0x02;
-
-	/** TIMA (programmable timer) interrupt */
-	public final short INT_TIMA =    0x04;
-
-	/** Serial interrupt */
-	public final short INT_SER =     0x08;
-
-	/** P10 - P13 (Joypad) interrupt */
-	public final short INT_P10 =     0x10;
-
-	GraphicsChip graphicsChip;
+	TileBasedGraphicsChip graphicsChip;
 	IoHandler ioHandler;
 	Component applet;
 	boolean terminate;
-	boolean running = false;
 
 	int gbcRamBank = 1;
 
@@ -113,14 +100,10 @@ class Dmgcpu {
 		applet = a;
 	}
 
-	/** Clear up memory */
 	public void dispose() {
 		graphicsChip.dispose();
 	}
 
-	/** Perform a CPU address space read.  This maps all the relevant objects into the correct parts of
-	 *  the memory
-	 */
 	public final short addressRead(int addr) {
 
 		addr = addr & 0xFFFF;
@@ -138,7 +121,7 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-			return graphicsChip.addressRead(addr);
+			return memory[addr + graphicsChip.vidRamStart];
 
 		case 0xC000 :
 		case 0xD000 :
@@ -178,7 +161,7 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-			graphicsChip.addressWrite(addr, (byte) data);
+				memory[addr + graphicsChip.vidRamStart] = (byte) data;
 			break;
 
 		case 0xA000 :
@@ -295,7 +278,6 @@ class Dmgcpu {
 			} /* Other interrupts go here, not done yet */
 
 			memory[0xFF0F] = (byte) intFlags;
-			//inInterrupt = true;
 		}
 	}
 
@@ -310,17 +292,7 @@ class Dmgcpu {
 
 	/** Check for interrupts that need to be initiated */
 	public final void initiateInterrupts() {
-		/*
-		if ((instrCount % instrsPerTima) == 0) {
-			if (JavaBoy.unsign(memory[0xFF05]) == 0) {
-				memory[0xFF05] = memory[0xFF06]; // Set TIMA modulo
-				if ((memory[0xFFFF] & INT_TIMA) != 0)
-					triggerInterrupt(INT_TIMA);
-			}
-			memory[0xFF05]++;
-		}
-		*/
-		
+	
 		if ((instrCount % INSTRS_PER_DIV) == 0) {
 			memory[0xFF04]++;
 		}
@@ -345,10 +317,6 @@ class Dmgcpu {
 			                ((memory[0xFF41] & 0x8) != 0) && ((memory[0xFF40] & 0x80) != 0) && (cline < 0x90) ) {
 				triggerInterrupt(INT_LCDC);
 			}
-
-			//if (ioHandler.hdmaRunning) {
-			//	ioHandler.performHdma();
-			//}
 
 			if (JavaBoy.unsign(memory[0xFF44]) == 143) {
 				for (int r = 144; r < 170; r++) {
@@ -387,7 +355,6 @@ class Dmgcpu {
 		terminate = false;
 		short newf;
 		int dat;
-		running = true;
 		graphicsChip.startTime = System.currentTimeMillis();
 		int b1, b2, b3, offset;
 
@@ -1812,7 +1779,6 @@ class Dmgcpu {
 			initiateInterrupts();
 
 		}
-		running = false;
 		terminate = false;
 	}
 }

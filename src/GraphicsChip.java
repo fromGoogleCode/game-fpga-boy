@@ -93,8 +93,8 @@ abstract class GraphicsChip {
 		backBuffer.flush();
 	}
 
-	abstract public short addressRead(int addr);
-	abstract public void addressWrite(int addr, byte data);
+	//abstract public short addressRead(int addr);
+	//abstract public void addressWrite(int addr, byte data);
 	abstract public void invalidateAll(int attribs);
 	abstract public boolean draw(Graphics g, int startX, int startY, Component a);
 	abstract public void notifyScanline(int line);

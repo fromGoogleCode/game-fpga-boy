@@ -31,8 +31,6 @@ class IoHandler {
 	/** Reference to the current CPU object */
 	Dmgcpu dmgcpu;
 
-	//boolean hdmaRunning;
-
 	/** Create an IoHandler for the specified CPU */
 	public IoHandler(Dmgcpu d) {
 		dmgcpu = d;
@@ -43,35 +41,7 @@ class IoHandler {
 	public void reset() {
 		ioWrite(0x40, (short) 0x91);
 		ioWrite(0x0F, (short) 0x01);
-		//hdmaRunning = false;
 	}
-
-	/*public void performHdma() {
-		int dmaSrc = (JavaBoy.unsign(dmgcpu.memory[0xFF51]) << 8) +
-		             (JavaBoy.unsign(dmgcpu.memory[0xFF52]) & 0xF0);
-		int dmaDst = ((JavaBoy.unsign(dmgcpu.memory[0xFF53]) & 0x1F) << 8) +
-		             (JavaBoy.unsign(dmgcpu.memory[0xFF54]) & 0xF0) + 0x8000;
-
-		for (int r = 0; r < 16; r++) {
-			dmgcpu.addressWrite(dmaDst + r, dmgcpu.addressRead(dmaSrc + r));
-		}
-
-		dmaSrc += 16;
-		dmaDst += 16;
-		dmgcpu.memory[0xFF51] = (byte) ((dmaSrc & 0xFF00) >> 8);
-		dmgcpu.memory[0xFF52] = (byte) (dmaSrc & 0x00F0);
-		dmgcpu.memory[0xFF53] = (byte) ((dmaDst & 0x1F00) >> 8);
-		dmgcpu.memory[0xFF54] = (byte) (dmaDst & 0x00F0);
-
-		int len = JavaBoy.unsign(dmgcpu.memory[0xFF55]);
-		if (len == 0x00) {
-			dmgcpu.memory[0xFF55] = (byte) 0xFF;
-			hdmaRunning = false;
-		} else {
-			len--;
-			dmgcpu.memory[0xFF55] = (byte) len;
-		}
-	}*/
 
 	/** Read data from IO Ram */
 	public short ioRead(int num) {
@@ -273,9 +243,10 @@ class IoHandler {
 			int sourceAddress = (data << 8);
 
 			// This could be speed up using System.arrayCopy, but hey.
-			for (int i = 0x00; i < 0xA0; i++) {
-				dmgcpu.addressWrite(0xFE00 + i, dmgcpu.addressRead(sourceAddress + i));
-			}
+			//for (int i = 0x00; i < 0xA0; i++) {
+			//	dmgcpu.addressWrite(0xFE00 + i, dmgcpu.addressRead(sourceAddress + i));
+			//}
+			System.arraycopy(dmgcpu.memory, sourceAddress, dmgcpu.memory, 0xFE00, 0xA0);
 			// This is meant to be run at the same time as the CPU is executing
 			// instructions, but I don't think it's crucial.
 			break;
@@ -308,30 +279,7 @@ class IoHandler {
 			break;
 
 
-		case 0x55 : /*
-			if ((!hdmaRunning) && ((dmgcpu.memory[0xFF55] & 0x80) == 0) && ((data & 0x80) == 0) ) {
-				int dmaSrc = (JavaBoy.unsign(dmgcpu.memory[0xFF51]) << 8) +
-				             (JavaBoy.unsign(dmgcpu.memory[0xFF52]) & 0xF0);
-				int dmaDst = ((JavaBoy.unsign(dmgcpu.memory[0xFF53]) & 0x1F) << 8) +
-				             (JavaBoy.unsign(dmgcpu.memory[0xFF54]) & 0xF0) + 0x8000;
-				int dmaLen = ((JavaBoy.unsign(data) & 0x7F) * 16) + 16;
-
-				if (dmaLen > 2048) dmaLen = 2048;
-
-				for (int r = 0; r < dmaLen; r++) {
-					dmgcpu.addressWrite(dmaDst + r, dmgcpu.addressRead(dmaSrc + r));
-				}
-			} else {
-				if ((JavaBoy.unsign(data) & 0x80) == 0x80) {
-					//hdmaRunning = true;
-					dmgcpu.memory[0xFF55] = (byte) (data & 0x7F);
-					break;
-				} //else if ((hdmaRunning) && ((JavaBoy.unsign(data) & 0x80) == 0)) {
-					//hdmaRunning = false;
-				//}
-			}
-
-			dmgcpu.memory[0xFF55] = (byte) data;*/
+		case 0x55 :
 			break;
 
 		case 0x69 :           // FF69 - BCPD: GBC BG Palette data write

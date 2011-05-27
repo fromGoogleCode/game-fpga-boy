@@ -54,21 +54,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 	}
 
-	/** Reads data from the specified video RAM address */
-	public short addressRead(int addr) {
-		return dmgcpu.memory[addr + vidRamStart];
-	}
-
-	/** Writes data to the specified video RAM address */
-	public void addressWrite(int addr, byte data) {
-		if (addr < 0x1800) {   // Bkg Tile data area
-			tiles[(addr >> 4) + tileStart].invalidate();
-			dmgcpu.memory[addr + vidRamStart] = data;
-		} else {
-			dmgcpu.memory[addr + vidRamStart] = data;
-		}
-	}
-
 	/** Invalidates all tiles in the tile cache that have the given attributes.
 	 *  These will be regenerated next time they are drawn.
 	 */
