@@ -31,10 +31,7 @@ class IoHandler {
 	/** Reference to the current CPU object */
 	Dmgcpu dmgcpu;
 
-	/** Current state of the button, true = pressed. */
-	//boolean padLeft, padRight, padUp, padDown, padA, padB, padStart, padSelect;
-
-	boolean hdmaRunning;
+	//boolean hdmaRunning;
 
 	/** Create an IoHandler for the specified CPU */
 	public IoHandler(Dmgcpu d) {
@@ -46,10 +43,10 @@ class IoHandler {
 	public void reset() {
 		ioWrite(0x40, (short) 0x91);
 		ioWrite(0x0F, (short) 0x01);
-		hdmaRunning = false;
+		//hdmaRunning = false;
 	}
 
-	public void performHdma() {
+	/*public void performHdma() {
 		int dmaSrc = (JavaBoy.unsign(dmgcpu.memory[0xFF51]) << 8) +
 		             (JavaBoy.unsign(dmgcpu.memory[0xFF52]) & 0xF0);
 		int dmaDst = ((JavaBoy.unsign(dmgcpu.memory[0xFF53]) & 0x1F) << 8) +
@@ -74,13 +71,11 @@ class IoHandler {
 			len--;
 			dmgcpu.memory[0xFF55] = (byte) len;
 		}
-
-	}
+	}*/
 
 	/** Read data from IO Ram */
 	public short ioRead(int num) {
 		switch (num) {
-			// Read Handlers go here
 
 		case 0x41 :         // LCDSTAT
 
@@ -135,131 +130,53 @@ class IoHandler {
 
 		switch (num) {
 		case 0x00 :           // FF00 - Joypad
-			//short output = 0x0F;
-			//if ((data & 0x10) == 0x00) {   // P14
-				//if (padRight) {
-				//	output &= ~1;
-				//}
-				//if (padLeft) {
-				//	output &= ~2;
-				//}
-				//if (padUp) {
-				//	output &= ~4;
-				//}
-				//if (padDown) {
-				//	output &= ~8;
-				//}
-			//}
-			//if ((data & 0x20) == 0x00) {   // P15
-			//	if (padA) {
-			//		output &= ~0x01;
-			//	}
-			//	if (padB) {
-			//		output &= ~0x02;
-			//	}
-			//	if (padSelect) {
-			//		output &= ~0x04;
-			//	}
-			//	if (padStart) {
-			//		output &= ~0x08;
-			//	}
-			//}
-			//output |= (data & 0xF0);
-			//dmgcpu.memory[0xFF00] = (byte) (output);
 			break;
-
 		case 0x02 :           // Serial
-
-			//dmgcpu.memory[0xFF02] = (byte) data;
-
-
-			//if ((dmgcpu.memory[0xFF02] & 0x01) == 1) {
-				//dmgcpu.memory[0xFF01] = (byte) 0xFF; // when no LAN connection, always receive 0xFF from port.  Simulates empty socket.
-				//if (dmgcpu.running) dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_SER);
-				//dmgcpu.memory[0xFF02] &= 0x7F;
-			//}
-
 			break;
-
 		case 0x04 :           // DIV
 			dmgcpu.memory[0xFF04] = 0;
 			break;
-
 		case 0x07 :           // TAC
-			//if ((data & 0x04) == 0) {
-			//	dmgcpu.timaEnabled = false;
-			//} else {
-			//	dmgcpu.timaEnabled = true;
-			//}
-
-			//int instrsPerSecond = dmgcpu.INSTRS_PER_VBLANK * 60;
-			//int clockFrequency = (data & 0x03);
-			/*
-			switch (clockFrequency) {
-			case 0: //dmgcpu.instrsPerTima = (instrsPerSecond / 4096);
-				break;
-			case 1: //dmgcpu.instrsPerTima = (instrsPerSecond / 262144);
-				break;
-			case 2: //dmgcpu.instrsPerTima = (instrsPerSecond / 65536);
-				break;
-			case 3: //dmgcpu.instrsPerTima = (instrsPerSecond / 16384);
-				break;
-			}
-			*/
 			break;
-
 		case 0x10 :           // Sound channel 1, sweep
 			//dmgcpu.memory[0xFF10] = (byte) data;
 			break;
-
 		case 0x11 :           // Sound channel 1, length and wave duty
 			//dmgcpu.memory[0xFF11] = (byte) data;
 			break;
-
 		case 0x12 :           // Sound channel 1, volume envelope
 			//dmgcpu.memory[0xFF12] = (byte) data;
 			break;
-
 		case 0x13 :           // Sound channel 1, frequency low
 			//dmgcpu.memory[0xFF13] = (byte) data;
 			break;
-
 		case 0x14 :           // Sound channel 1, frequency high
 			//dmgcpu.memory[0xFF14] = (byte) data;
 			break;
-
 		case 0x17 :           // Sound channel 2, volume envelope
 			//dmgcpu.memory[0xFF17] = (byte) data;
 			break;
-
 		case 0x18 :           // Sound channel 2, frequency low
 			//dmgcpu.memory[0xFF18] = (byte) data;
 			break;
-
 		case 0x19 :           // Sound channel 2, frequency high
 			//dmgcpu.memory[0xFF19] = (byte) data;
 			break;
-
 		case 0x16 :           // Sound channel 2, length and wave duty
 			//dmgcpu.memory[0xFF16] = (byte) data;
 			break;
-
 		case 0x1A :           // Sound channel 3, on/off
 			//dmgcpu.memory[0xFF1A] = (byte) data;
 			break;
-
 		case 0x1B :           // Sound channel 3, length
 			//dmgcpu.memory[0xFF1B] = (byte) data;
 			break;
-
 		case 0x1C :           // Sound channel 3, volume
 			//dmgcpu.memory[0xFF1C] = (byte) data;
 			break;
-
 		case 0x1D :           // Sound channel 3, frequency lower 8-bit
 			//dmgcpu.memory[0xFF1D] = (byte) data;
 			break;
-
 		case 0x1E :           // Sound channel 3, frequency higher 3-bit
 			//dmgcpu.memory[0xFF1E] = (byte) data;
 			break;
@@ -267,19 +184,15 @@ class IoHandler {
 		case 0x20 :           // Sound channel 4, length
 			//dmgcpu.memory[0xFF20] = (byte) data;
 			break;
-
 		case 0x21 :           // Sound channel 4, volume envelope
 			//dmgcpu.memory[0xFF21] = (byte) data;
 			break;
-
 		case 0x22 :           // Sound channel 4, polynomial parameters
 			//dmgcpu.memory[0xFF22] = (byte) data;
 			break;
-
 		case 0x23 :          // Sound channel 4, initial/consecutive
 			//dmgcpu.memory[0xFF23] = (byte) data;
 			break;
-
 		case 0x25 :           // Stereo select
 			//dmgcpu.memory[0xFF25] = (byte) data;
 			break;
@@ -395,7 +308,7 @@ class IoHandler {
 			break;
 
 
-		case 0x55 :
+		case 0x55 : /*
 			if ((!hdmaRunning) && ((dmgcpu.memory[0xFF55] & 0x80) == 0) && ((data & 0x80) == 0) ) {
 				int dmaSrc = (JavaBoy.unsign(dmgcpu.memory[0xFF51]) << 8) +
 				             (JavaBoy.unsign(dmgcpu.memory[0xFF52]) & 0xF0);
@@ -410,15 +323,15 @@ class IoHandler {
 				}
 			} else {
 				if ((JavaBoy.unsign(data) & 0x80) == 0x80) {
-					hdmaRunning = true;
+					//hdmaRunning = true;
 					dmgcpu.memory[0xFF55] = (byte) (data & 0x7F);
 					break;
-				} else if ((hdmaRunning) && ((JavaBoy.unsign(data) & 0x80) == 0)) {
-					hdmaRunning = false;
-				}
+				} //else if ((hdmaRunning) && ((JavaBoy.unsign(data) & 0x80) == 0)) {
+					//hdmaRunning = false;
+				//}
 			}
 
-			dmgcpu.memory[0xFF55] = (byte) data;
+			dmgcpu.memory[0xFF55] = (byte) data;*/
 			break;
 
 		case 0x69 :           // FF69 - BCPD: GBC BG Palette data write
@@ -460,7 +373,6 @@ class IoHandler {
 			if (((data & 0x07) == 0) || ((data & 0x07) == 1)) {
 				dmgcpu.gbcRamBank = 1;
 			} else {
-				System.out.println("Chegou aqui amigo...");
 				dmgcpu.gbcRamBank = data & 0x07;
 			}
 			dmgcpu.memory[0xFF70] = (byte) data;

@@ -346,9 +346,9 @@ class Dmgcpu {
 				triggerInterrupt(INT_LCDC);
 			}
 
-			if (ioHandler.hdmaRunning) {
-				ioHandler.performHdma();
-			}
+			//if (ioHandler.hdmaRunning) {
+			//	ioHandler.performHdma();
+			//}
 
 			if (JavaBoy.unsign(memory[0xFF44]) == 143) {
 				for (int r = 144; r < 170; r++) {
