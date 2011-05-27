@@ -70,7 +70,6 @@ class Dmgcpu {
 	public final short INT_P10 =     0x10; /** P10 - P13 (Joypad) interrupt */
 
 	TileBasedGraphicsChip graphicsChip;
-	IoHandler ioHandler;
 	Component applet;
 	boolean terminate;
 
@@ -90,7 +89,6 @@ class Dmgcpu {
 			System.out.println("Error opening ROM image");
 		}
 		graphicsChip = new TileBasedGraphicsChip(a, this);
-		ioHandler = new IoHandler(this);
 		applet = a;
 	}
 
@@ -461,8 +459,6 @@ class Dmgcpu {
 
 		addressWrite(0xFF40, 0x91);
 		addressWrite(0xFF0F, 0x01);
-
-		ioHandler.reset();
 	}
 
 	/** If an interrupt is enabled an the interrupt register shows that it has occurred, jump to
