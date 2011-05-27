@@ -34,9 +34,9 @@ import java.io.InputStream;
  *  ROM/RAM/IO.
  */
 class Dmgcpu {
-	/** Registers: 8-bit */
+	// Registers: 8-bit
 	int a, b, c, d, e, f;
-	/** Registers: 16-bit */
+	// Registers: 16-bit
 	public int sp, pc, hl;
 
 	/** The number of instructions that have been executed since the
@@ -48,9 +48,6 @@ class Dmgcpu {
 
 	/** Used to implement the IE delay slot */
 	int ieDelay = -1;
-
-	boolean timaEnabled = false;
-	int instrsPerTima = 6000;
 
 	/** Zero flag */
 	final short F_ZERO =      0x80;
@@ -68,12 +65,10 @@ class Dmgcpu {
 	 *  on the screen.  Multiply by 154 to find out how many instructions
 	 *  per frame.
 	 */
-	final short BASE_INSTRS_PER_HBLANK = 60;
-	short INSTRS_PER_HBLANK = BASE_INSTRS_PER_HBLANK;
+	short INSTRS_PER_HBLANK = 60;
 
 	/** Used to set the speed of DIV increments */
-	final short BASE_INSTRS_PER_DIV    = 33;
-	short INSTRS_PER_DIV = BASE_INSTRS_PER_DIV;
+	short INSTRS_PER_DIV = 33;
 
 	// Constants for interrupts
 
@@ -92,9 +87,6 @@ class Dmgcpu {
 	/** P10 - P13 (Joypad) interrupt */
 	public final short INT_P10 =     0x10;
 
-	// 256 bytes at top of RAM are used mainly for registers
-	//byte[] oam = new byte[0x100];
-
 	GraphicsChip graphicsChip;
 	IoHandler ioHandler;
 	Component applet;
@@ -111,7 +103,7 @@ class Dmgcpu {
 	public Dmgcpu(Component a) {
 		try {
 			InputStream is = new FileInputStream(new File("../roms/rom.gb"));
-			is.read(memory, 0, 0x8000); // Read the entire ROM
+			is.read(memory, 0, 0x8000);
 			is.close();
 		} catch (IOException e) {
 			System.out.println("Error opening ROM image");
@@ -147,7 +139,6 @@ class Dmgcpu {
 		case 0x8000 :
 		case 0x9000 :
 			return graphicsChip.addressRead(addr);
-			//return memory[addr];
 
 		case 0xC000 :
 		case 0xD000 :
@@ -188,7 +179,6 @@ class Dmgcpu {
 		case 0x8000 :
 		case 0x9000 :
 			graphicsChip.addressWrite(addr, (byte) data);
-			//memory[addr] = (byte) data;
 			break;
 
 		case 0xA000 :
@@ -256,7 +246,6 @@ class Dmgcpu {
 
 	/** Resets the CPU to it's power on state.  Memory contents are not cleared. */
 	public void reset() {
-		setDoubleSpeedCpu(false);
 		graphicsChip.dispose();
 		interruptsEnabled = false;
 		ieDelay = -1;
@@ -274,18 +263,6 @@ class Dmgcpu {
 		hl = 0;
 
 		ioHandler.reset();
-	}
-
-	public void setDoubleSpeedCpu(boolean enabled) {
-
-		if (enabled) {
-			INSTRS_PER_HBLANK = BASE_INSTRS_PER_HBLANK * 2;
-			INSTRS_PER_DIV = BASE_INSTRS_PER_DIV * 2;
-		} else {
-			INSTRS_PER_HBLANK = BASE_INSTRS_PER_HBLANK;
-			INSTRS_PER_DIV = BASE_INSTRS_PER_DIV;
-		}
-
 	}
 
 	/** If an interrupt is enabled an the interrupt register shows that it has occurred, jump to
@@ -333,7 +310,8 @@ class Dmgcpu {
 
 	/** Check for interrupts that need to be initiated */
 	public final void initiateInterrupts() {
-		if (timaEnabled && ((instrCount % instrsPerTima) == 0)) {
+		/*
+		if ((instrCount % instrsPerTima) == 0) {
 			if (JavaBoy.unsign(memory[0xFF05]) == 0) {
 				memory[0xFF05] = memory[0xFF06]; // Set TIMA modulo
 				if ((memory[0xFFFF] & INT_TIMA) != 0)
@@ -341,11 +319,13 @@ class Dmgcpu {
 			}
 			memory[0xFF05]++;
 		}
-
+		*/
+		
 		if ((instrCount % INSTRS_PER_DIV) == 0) {
 			memory[0xFF04]++;
 		}
-
+		
+		
 		if ((instrCount % INSTRS_PER_HBLANK) == 0) {
 
 
@@ -446,9 +426,7 @@ class Dmgcpu {
 				break;
 			case 0x04 :               // INC B
 				pc++;
-				//System.out.println("ANTES FLAG REGISTER IS " + Integer.toBinaryString(f));
 				f &= F_CARRY;
-				//System.out.println("DEPOIS FLAG REGISTER IS " + Integer.toBinaryString(f));
 				switch (b) {
 				case 0xFF: f |= F_HALFCARRY + F_ZERO;
 					b = 0x00;
@@ -585,12 +563,12 @@ class Dmgcpu {
 					if ((memory[0xFF4D] & 0x01) == 1) {
 						int newKey1Reg = memory[0xFF4D] & 0xFE;
 						if ((newKey1Reg & 0x80) == 0x80) {
-							setDoubleSpeedCpu(false);
+							//setDoubleSpeedCpu(false);
 							newKey1Reg &= 0x7F;
-						} else {
-							setDoubleSpeedCpu(true);
-							newKey1Reg |= 0x80;
-						}
+						} //else {
+						//	setDoubleSpeedCpu(true);
+						//	newKey1Reg |= 0x80;
+						//}
 						memory[0xFF4D] = (byte) newKey1Reg;
 					}
 				//}

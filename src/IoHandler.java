@@ -186,25 +186,26 @@ class IoHandler {
 			break;
 
 		case 0x07 :           // TAC
-			if ((data & 0x04) == 0) {
-				dmgcpu.timaEnabled = false;
-			} else {
-				dmgcpu.timaEnabled = true;
-			}
+			//if ((data & 0x04) == 0) {
+			//	dmgcpu.timaEnabled = false;
+			//} else {
+			//	dmgcpu.timaEnabled = true;
+			//}
 
-			int instrsPerSecond = dmgcpu.INSTRS_PER_VBLANK * 60;
-			int clockFrequency = (data & 0x03);
-
+			//int instrsPerSecond = dmgcpu.INSTRS_PER_VBLANK * 60;
+			//int clockFrequency = (data & 0x03);
+			/*
 			switch (clockFrequency) {
-			case 0: dmgcpu.instrsPerTima = (instrsPerSecond / 4096);
+			case 0: //dmgcpu.instrsPerTima = (instrsPerSecond / 4096);
 				break;
-			case 1: dmgcpu.instrsPerTima = (instrsPerSecond / 262144);
+			case 1: //dmgcpu.instrsPerTima = (instrsPerSecond / 262144);
 				break;
-			case 2: dmgcpu.instrsPerTima = (instrsPerSecond / 65536);
+			case 2: //dmgcpu.instrsPerTima = (instrsPerSecond / 65536);
 				break;
-			case 3: dmgcpu.instrsPerTima = (instrsPerSecond / 16384);
+			case 3: //dmgcpu.instrsPerTima = (instrsPerSecond / 16384);
 				break;
 			}
+			*/
 			break;
 
 		case 0x10 :           // Sound channel 1, sweep

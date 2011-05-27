@@ -20,90 +20,42 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
 
 public class JavaBoy extends java.applet.Applet implements Runnable {
 	static final long serialVersionUID = 10;
 
 	private boolean appletRunning = true;
-	private boolean fullFrame = true;
 	
 	Dmgcpu dmgcpu;
-	GraphicsChip graphicsChip;
-	Image doubleBuffer;
 
-	/** Returns the unsigned value (0 - 255) of a signed byte */
 	static public short unsign(byte b) {
-		if (b < 0) {
+		if (b < 0) 
 			return (short) (256 + b);
-		} else {
+		else
 			return b;
-		}
 	}
 
-	/** Returns the unsigned value (0 - 255) of a signed 8-bit value stored in a short */
 	static public short unsign(short b) {
-		if (b < 0) {
+		if (b < 0)
 			return (short) (256 + b);
-		} else {
+		else
 			return b;
-		}
 	}
 
 	/** When running as an applet, updates the screen when necessary */
 	public void paint(Graphics g) {
-		if (dmgcpu != null) {
-
-			if (!fullFrame) {
-				dmgcpu.graphicsChip.draw(g, 0, 0, this);
-			} else {
-				Graphics bufferGraphics = doubleBuffer.getGraphics();
-
-				bufferGraphics.setColor(new Color(255, 255, 255));
-				bufferGraphics.fillRect(0, 0, 160, 144);
-
-				dmgcpu.graphicsChip.draw(bufferGraphics, 0, 0, this);
-
-				g.drawImage(doubleBuffer, 0, 0, this);
-			}
-		} else {
-			g.setColor(new Color(0,0,0));
-			g.fillRect(0, 0, 160, 144);
-			g.setColor(new Color(255, 255, 255));
-			g.drawRect(0, 0, 160, 144);
-		}
-
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
-		if (e.getActionCommand().equals("Reset")) {
-			dmgcpu.reset();
-		}
-	}
-
-	public void update(Graphics g) {
-		paint(g);
-		fullFrame = true;
+		dmgcpu.graphicsChip.draw(g, 0, 0, this);
 	}
 
 	public void drawNextFrame() {
-		fullFrame = false;
 		repaint();
-	}
-
-	public void windowClosing(WindowEvent e) {
-		dispose();
-		System.exit(0);
 	}
 
 	public void start() {
 		Thread p = new Thread(this);
-		System.out.println("JavaBoy (tm) Version 0.92 Downgrade by ChaoticGabibo (c) 2005 Neil Millstone (applet)");
+		//System.out.println("JavaBoy (tm) Version 0.92 Downgrade by ChaoticGabibo (c) 2005 Neil Millstone (applet)");
 		dmgcpu = new Dmgcpu(this);
 		dmgcpu.graphicsChip.setMagnify();
-		this.requestFocus();
 		p.start();
 	}
 
@@ -130,15 +82,10 @@ public class JavaBoy extends java.applet.Applet implements Runnable {
 		if (dmgcpu != null) dmgcpu.dispose();
 	}
 
-	public void init() {
-		requestFocus();
-		doubleBuffer = createImage(160, 144);
-	}
-
-	public void stop() {
-		System.out.println("Applet stopped");
-		appletRunning = false;
-		if (dmgcpu != null) dmgcpu.terminate = true;
-	}
+	//public void stop() {
+	//	System.out.println("Applet stopped");
+	//	appletRunning = false;
+	//	if (dmgcpu != null) dmgcpu.terminate = true;
+	//}
 
 }
