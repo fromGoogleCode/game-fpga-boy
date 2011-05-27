@@ -29,7 +29,7 @@ import java.awt.image.*;
  *  It supports some raster effects, but only ones that happen on a tile row boundary.
  */
 class TileBasedGraphicsChip extends GraphicsChip {
-	/** Tile cache */
+	// Tile cache
 	GameboyTile[] tiles = new GameboyTile[384 * 2];
 
 	// Hacks to allow some raster effects to work.  Or at least not to break as badly.
@@ -48,11 +48,11 @@ class TileBasedGraphicsChip extends GraphicsChip {
 	}
 
 	/** Flush the tile cache */
-	public void dispose() {
-		for (int r = 0; r < 384 * 2; r++) {
-			if (tiles[r] != null) tiles[r].dispose();
-		}
-	}
+	//public void dispose() {
+	//	for (int r = 0; r < 384 * 2; r++) {
+	//		if (tiles[r] != null) tiles[r].dispose();
+	//	}
+	//}
 
 	/** Invalidates all tiles in the tile cache that have the given attributes.
 	 *  These will be regenerated next time they are drawn.
@@ -70,10 +70,10 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 		// Draw sprites
 		for (int i = 0; i < 40; i++) {
-			int spriteX = dmgcpu.addressRead(0xFE01 + (i * 4)) - 8;
-			int spriteY = dmgcpu.addressRead(0xFE00 + (i * 4)) - 16;
-			int tileNum = dmgcpu.addressRead(0xFE02 + (i * 4));
-			int attributes = dmgcpu.addressRead(0xFE03 + (i * 4));
+			int spriteX		= dmgcpu.addressRead(0xFE01 + (i * 4)) - 8;
+			int spriteY		= dmgcpu.addressRead(0xFE00 + (i * 4)) - 16;
+			int tileNum		= dmgcpu.addressRead(0xFE02 + (i * 4));
+			int attributes	= dmgcpu.addressRead(0xFE03 + (i * 4));
 
 			if ((attributes & 0x80) >> 7 == priority) {
 
@@ -224,20 +224,20 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 	}
 
-	/** Clears the frame buffer to the background color */
+	// Clears the frame buffer to the background color
 	public void clearFrameBuffer() {
 		Graphics back = backBuffer.getGraphics();
 		back.setColor(new Color(backgroundPalette.getRgbEntry(0)));
 		back.fillRect(0, 0, 160, 144);
 	}
 
-	/** Draw the current graphics frame into the given graphics context */
+	// Draw the current graphics frame into the given graphics context
 	public boolean draw(Graphics g, int startX, int startY, Component a) {
 		int tileNum;
 
 		Graphics back = backBuffer.getGraphics();
 
-		/* Draw window */
+		// Draw window
 		if (winEnabled) {
 			int wx, wy;
 			int windowStartAddress;

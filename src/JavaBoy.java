@@ -24,7 +24,7 @@ import java.awt.*;
 public class JavaBoy extends java.applet.Applet implements Runnable {
 	static final long serialVersionUID = 10;
 
-	private boolean appletRunning = true;
+	//private boolean appletRunning = true;
 	
 	Dmgcpu dmgcpu;
 
@@ -62,24 +62,24 @@ public class JavaBoy extends java.applet.Applet implements Runnable {
 		do {
 			dmgcpu.reset();
 			dmgcpu.execute();
-		} while (appletRunning);
-		do {
-			try {
-				java.lang.Thread.sleep(1);
-				this.requestFocus();
-			} catch (InterruptedException e) {
-				System.out.println("Interrupted!");
-				break;
-			}
-		} while (appletRunning);
-		dispose();
-		System.out.println("Thread terminated");
+		} while (true);
+		//do {
+		//	try {
+		//		java.lang.Thread.sleep(1);
+		//		this.requestFocus();
+		//	} catch (InterruptedException e) {
+		//		System.out.println("Interrupted!");
+		//		break;
+		//	}
+		//} while (true);
+		//dispose();
+		//System.out.println("Thread terminated");
 	}
 
 	/** Free up allocated memory */
-	public void dispose() {
-		if (dmgcpu != null) dmgcpu.dispose();
-	}
+	//public void dispose() {
+		//if (dmgcpu != null) dmgcpu.dispose();
+	//}
 
 	//public void stop() {
 	//	System.out.println("Applet stopped");

@@ -44,13 +44,13 @@ class Dmgcpu {
 
 	boolean interruptsEnabled = false;
 
-	/** Used to implement the IE delay slot */
+	// Used to implement the IE delay slot
 	int ieDelay = -1;
 
-	final short F_ZERO =      0x80; /** Zero flag */
-	final short F_SUBTRACT =  0x40; /** Subtract/negative flag */
-	final short F_HALFCARRY = 0x20; /** Half carry flag */
-	final short F_CARRY =     0x10; /** Carry flag */
+	final short F_ZERO =      0x80; // Zero flag
+	final short F_SUBTRACT =  0x40; // Subtract/negative flag
+	final short F_HALFCARRY = 0x20; // Half carry flag
+	final short F_CARRY =     0x10; // Carry flag
 
 	final short INSTRS_PER_VBLANK = 9000;
 
@@ -63,11 +63,11 @@ class Dmgcpu {
 	short INSTRS_PER_DIV = 33; /** Used to set the speed of DIV increments */
 
 	// Constants for interrupts
-	public final short INT_VBLANK =  0x01; /** Vertical blank interrupt */
-	public final short INT_LCDC =    0x02; /** LCD Coincidence interrupt */
-	public final short INT_TIMA =    0x04; /** TIMA (programmable timer) interrupt */
-	public final short INT_SER =     0x08; /** Serial interrupt */
-	public final short INT_P10 =     0x10; /** P10 - P13 (Joypad) interrupt */
+	public final short INT_VBLANK =  0x01; // Vertical blank interrupt
+	public final short INT_LCDC =    0x02; // LCD Coincidence interrupt
+	public final short INT_TIMA =    0x04; // TIMA (programmable timer) interrupt
+	public final short INT_SER =     0x08; // Serial interrupt
+	public final short INT_P10 =     0x10; // P10 - P13 (Joypad) interrupt
 
 	TileBasedGraphicsChip graphicsChip;
 	Component applet;
@@ -92,9 +92,9 @@ class Dmgcpu {
 		applet = a;
 	}
 
-	public void dispose() {
-		graphicsChip.dispose();
-	}
+	//public void dispose() {
+	//	graphicsChip.dispose();
+	//}
 
 	public final short addressRead(int addr) {
 
@@ -441,7 +441,7 @@ class Dmgcpu {
 
 	/** Resets the CPU to it's power on state.  Memory contents are not cleared. */
 	public void reset() {
-		graphicsChip.dispose();
+		//graphicsChip.dispose();
 		interruptsEnabled = false;
 		ieDelay = -1;
 		pc = 0x0100;

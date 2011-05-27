@@ -81,23 +81,19 @@ abstract class GraphicsChip {
 
 		backBuffer = a.createImage(160, 144);
 		applet = a;
-	} /** Set the magnification for the screen */
+	} // Set the magnification for the screen
 
 	public void setMagnify() {
 		if (backBuffer != null) backBuffer.flush();
 		backBuffer = applet.createImage(160, 144);
 	}
 
-	/** Clear up any allocated memory */
-	public void dispose() {
-		backBuffer.flush();
-	}
+	// Clear up any allocated memory
+	//public void dispose() {
+	//	backBuffer.flush();
+	//}
 
-	//abstract public short addressRead(int addr);
-	//abstract public void addressWrite(int addr, byte data);
 	abstract public void invalidateAll(int attribs);
 	abstract public boolean draw(Graphics g, int startX, int startY, Component a);
 	abstract public void notifyScanline(int line);
-	//abstract public void invalidateAll();
-	//abstract public boolean isFrameReady();
 }
