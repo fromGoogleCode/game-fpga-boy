@@ -86,7 +86,6 @@ class IoHandler {
 
 			int output = 0;
 
-			//if (registers[0x44] == registers[0x45]) {
 			if (dmgcpu.memory[0xFF44] == dmgcpu.memory[0xFF45]) {
 				output |= 4;
 			}
@@ -136,7 +135,7 @@ class IoHandler {
 
 		switch (num) {
 		case 0x00 :           // FF00 - Joypad
-			short output = 0x0F;
+			//short output = 0x0F;
 			//if ((data & 0x10) == 0x00) {   // P14
 				//if (padRight) {
 				//	output &= ~1;
@@ -165,20 +164,20 @@ class IoHandler {
 			//		output &= ~0x08;
 			//	}
 			//}
-			output |= (data & 0xF0);
-			dmgcpu.memory[0xFF00] = (byte) (output);
+			//output |= (data & 0xF0);
+			//dmgcpu.memory[0xFF00] = (byte) (output);
 			break;
 
 		case 0x02 :           // Serial
 
-			dmgcpu.memory[0xFF02] = (byte) data;
+			//dmgcpu.memory[0xFF02] = (byte) data;
 
 
-			if ((dmgcpu.memory[0xFF02] & 0x01) == 1) {
-				dmgcpu.memory[0xFF01] = (byte) 0xFF; // when no LAN connection, always receive 0xFF from port.  Simulates empty socket.
-				if (dmgcpu.running) dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_SER);
-				dmgcpu.memory[0xFF02] &= 0x7F;
-			}
+			//if ((dmgcpu.memory[0xFF02] & 0x01) == 1) {
+				//dmgcpu.memory[0xFF01] = (byte) 0xFF; // when no LAN connection, always receive 0xFF from port.  Simulates empty socket.
+				//if (dmgcpu.running) dmgcpu.triggerInterruptIfEnabled(dmgcpu.INT_SER);
+				//dmgcpu.memory[0xFF02] &= 0x7F;
+			//}
 
 			break;
 
@@ -359,7 +358,7 @@ class IoHandler {
 		case 0x46 :           // DMA
 			int sourceAddress = (data << 8);
 
-			// This could be sped up using System.arrayCopy, but hey.
+			// This could be speed up using System.arrayCopy, but hey.
 			for (int i = 0x00; i < 0xA0; i++) {
 				dmgcpu.addressWrite(0xFE00 + i, dmgcpu.addressRead(sourceAddress + i));
 			}

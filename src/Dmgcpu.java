@@ -402,7 +402,7 @@ class Dmgcpu {
 	}
 
 	/** Execute the specified number of Gameboy instructions. */
-	public final void execute(int numInstr) {
+	public final void execute() {
 
 		terminate = false;
 		short newf;

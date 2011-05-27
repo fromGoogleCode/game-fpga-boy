@@ -96,7 +96,7 @@ abstract class GraphicsChip {
 		applet = a;
 	} /** Set the magnification for the screen */
 
-	public void setMagnify(int m) {
+	public void setMagnify() {
 		if (backBuffer != null) backBuffer.flush();
 		backBuffer = applet.createImage(160, 144);
 	}
@@ -111,6 +111,6 @@ abstract class GraphicsChip {
 	abstract public void invalidateAll(int attribs);
 	abstract public boolean draw(Graphics g, int startX, int startY, Component a);
 	abstract public void notifyScanline(int line);
-	abstract public void invalidateAll();
+	//abstract public void invalidateAll();
 	//abstract public boolean isFrameReady();
 }

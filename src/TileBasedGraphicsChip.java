@@ -78,17 +78,11 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 	}
 
-	/** Invalidate all tiles in the tile cache */
-	
-	public void invalidateAll() {
-	}
-	
-
 	/** Set the size of the Gameboy window. */
-	public void setMagnify(int m) {
-		super.setMagnify(m);
+	public void setMagnify() {
+		super.setMagnify();
 		for (int r = 0; r < 384 * 2; r++) {
-			tiles[r].setMagnify(m);
+			tiles[r].setMagnify();
 		}
 	}
 
@@ -355,7 +349,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 
 		/** Current magnification value of Gameboy screen */
 		int magnify = 1;
-		int[] imageData = new int[64 * magnify * magnify];
+		int[] imageData = new int[64];
 		Component a;
 
 		/** Initialize a new Gameboy tile */
@@ -467,7 +461,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 
 		/** Change the magnification of the tile */
-		public void setMagnify(int m) {
+		public void setMagnify() {
 			for (int r = 0; r < 64; r++) {
 				valid[r] = false;
 				source[r] = null;
@@ -476,8 +470,7 @@ class TileBasedGraphicsChip extends GraphicsChip {
 					image[r] = null;
 				}
 			}
-			magnify = m;
-			imageData = new int[64 * magnify * magnify];
+			imageData = new int[64];
 		}
 
 		/** Invalidate tile with the specified palette, including all flipped versions. */
