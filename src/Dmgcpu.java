@@ -39,9 +39,7 @@ class Dmgcpu {
 	// Registers: 16-bit
 	public int sp, pc, hl;
 
-	/** The number of instructions that have been executed since the
-	 *  last reset
-	 */
+	// The number of instructions that have been executed since the last reset
 	int instrCount = 0;
 
 	boolean interruptsEnabled = false;
@@ -49,14 +47,10 @@ class Dmgcpu {
 	/** Used to implement the IE delay slot */
 	int ieDelay = -1;
 
-	/** Zero flag */
-	final short F_ZERO =      0x80;
-	/** Subtract/negative flag */
-	final short F_SUBTRACT =  0x40;
-	/** Half carry flag */
-	final short F_HALFCARRY = 0x20;
-	/** Carry flag */
-	final short F_CARRY =     0x10;
+	final short F_ZERO =      0x80; /** Zero flag */
+	final short F_SUBTRACT =  0x40; /** Subtract/negative flag */
+	final short F_HALFCARRY = 0x20; /** Half carry flag */
+	final short F_CARRY =     0x10; /** Carry flag */
 
 	final short INSTRS_PER_VBLANK = 9000;
 
@@ -183,9 +177,229 @@ class Dmgcpu {
 			} else if (addr < 0xFF00) {
 				memory[addr] = (byte) data;
 			} else {
-				ioHandler.ioWrite(addr - 0xFF00, (short) data);
+				switch (addr) {
+				case 0xFF00 :           // FF00 - Joypad
+					break;
+				case 0xFF02 :           // Serial
+					break;
+				case 0xFF04 :           // DIV
+					memory[0xFF04] = 0;
+					break;
+				case 0xFF07 :           // TAC
+					break;
+				case 0xFF10 :           // Sound channel 1, sweep
+					//memory[0xFF10] = (byte) data;
+					break;
+				case 0xFF11 :           // Sound channel 1, length and wave duty
+					//memory[0xFF11] = (byte) data;
+					break;
+				case 0xFF12 :           // Sound channel 1, volume envelope
+					//memory[0xFF12] = (byte) data;
+					break;
+				case 0xFF13 :           // Sound channel 1, frequency low
+					//memory[0xFF13] = (byte) data;
+					break;
+				case 0xFF14 :           // Sound channel 1, frequency high
+					//memory[0xFF14] = (byte) data;
+					break;
+				case 0xFF17 :           // Sound channel 2, volume envelope
+					//memory[0xFF17] = (byte) data;
+					break;
+				case 0xFF18 :           // Sound channel 2, frequency low
+					//memory[0xFF18] = (byte) data;
+					break;
+				case 0xFF19 :           // Sound channel 2, frequency high
+					//memory[0xFF19] = (byte) data;
+					break;
+				case 0xFF16 :           // Sound channel 2, length and wave duty
+					//memory[0xFF16] = (byte) data;
+					break;
+				case 0xFF1A :           // Sound channel 3, on/off
+					//memory[0xFF1A] = (byte) data;
+					break;
+				case 0xFF1B :           // Sound channel 3, length
+					//memory[0xFF1B] = (byte) data;
+					break;
+				case 0xFF1C :           // Sound channel 3, volume
+					//memory[0xFF1C] = (byte) data;
+					break;
+				case 0xFF1D :           // Sound channel 3, frequency lower 8-bit
+					//memory[0xFF1D] = (byte) data;
+					break;
+				case 0xFF1E :           // Sound channel 3, frequency higher 3-bit
+					//memory[0xFF1E] = (byte) data;
+					break;
+				case 0xFF20 :           // Sound channel 4, length
+					//memory[0xFF20] = (byte) data;
+					break;
+				case 0xFF21 :           // Sound channel 4, volume envelope
+					//memory[0xFF21] = (byte) data;
+					break;
+				case 0xFF22 :           // Sound channel 4, polynomial parameters
+					//memory[0xFF22] = (byte) data;
+					break;
+				case 0xFF23 :          // Sound channel 4, initial/consecutive
+					//memory[0xFF23] = (byte) data;
+					break;
+				case 0xFF25 :           // Stereo select
+					//memory[0xFF25] = (byte) data;
+					break;
+	
+				case 0xFF30 :
+				case 0xFF31 :
+				case 0xFF32 :
+				case 0xFF33 :
+				case 0xFF34 :
+				case 0xFF35 :
+				case 0xFF36 :
+				case 0xFF37 :
+				case 0xFF38 :
+				case 0xFF39 :
+				case 0xFF3A :
+				case 0xFF3B :
+				case 0xFF3C :
+				case 0xFF3D :
+				case 0xFF3E :
+				case 0xFF3F :
+					memory[addr] = (byte) data;
+					break;
+	
+				case 0xFF40 :           // LCDC
+					graphicsChip.bgEnabled = true;
+	
+					if ((data & 0x20) == 0x20)     // BIT 5
+						graphicsChip.winEnabled = true;
+					else
+						graphicsChip.winEnabled = false;
+	
+					if ((data & 0x10) == 0x10)     // BIT 4
+						graphicsChip.bgWindowDataSelect = true;
+					else
+						graphicsChip.bgWindowDataSelect = false;
+	
+					if ((data & 0x08) == 0x08)
+						graphicsChip.hiBgTileMapAddress = true;
+					else
+						graphicsChip.hiBgTileMapAddress = false;
+	
+					if ((data & 0x04) == 0x04)      // BIT 2
+						graphicsChip.doubledSprites = true;
+					else
+						graphicsChip.doubledSprites = false;
+	
+					if ((data & 0x02) == 0x02)     // BIT 1
+						graphicsChip.spritesEnabled = true;
+					else
+						graphicsChip.spritesEnabled = false;
+	
+					if ((data & 0x01) == 0x00) {     // BIT 0
+						graphicsChip.bgEnabled = false;
+						graphicsChip.winEnabled = false;
+					}
+	
+					memory[0xFF40] = (byte) data;
+					break;
+	
+				case 0xFF41 :
+					memory[0xFF41] = (byte) data;
+					break;
+	
+				case 0xFF42 :           // SCY
+					memory[0xFF42] = (byte) data;
+					break;
+	
+				case 0xFF43 :           // SCX
+					memory[0xFF43] = (byte) data;
+					break;
+	
+				case 0xFF46 :           // DMA
+					int sourceAddress = (data << 8);
+	
+					// This could be speed up using System.arrayCopy, but hey.
+					System.arraycopy(memory, sourceAddress, memory, 0xFE00, 0xA0);
+					// This is meant to be run at the same time as the CPU is executing
+					// instructions, but I don't think it's crucial.
+					break;
+				case 0xFF47 :           // FF47 - BKG and WIN palette
+					graphicsChip.backgroundPalette.decodePalette(data);
+					if (memory[addr] != (byte) data) {
+						memory[addr] = (byte) data;
+						graphicsChip.invalidateAll(GraphicsChip.TILE_BKG);
+					}
+					break;
+				case 0xFF48 :           // FF48 - OBJ1 palette
+					graphicsChip.obj1Palette.decodePalette(data);
+					if (memory[addr] != (byte) data) {
+						memory[addr] = (byte) data;
+						graphicsChip.invalidateAll(GraphicsChip.TILE_OBJ1);
+					}
+					break;
+				case 0xFF49 :           // FF49 - OBJ2 palette
+					graphicsChip.obj2Palette.decodePalette(data);
+					if (memory[addr] != (byte) data) {
+						memory[addr] = (byte) data;
+						graphicsChip.invalidateAll(GraphicsChip.TILE_OBJ2);
+					}
+					break;
+	
+				case 0xFF4F :
+					graphicsChip.tileStart = (data & 0x01) * 384;
+					graphicsChip.vidRamStart = (data & 0x01) * 0x2000;
+					memory[0xFF4F] = (byte) data;
+					break;
+	
+	
+				case 0xFF55 :
+					break;
+	
+				case 0xFF69 :           // FF69 - BCPD: GBC BG Palette data write
+	
+					int palNumber = (memory[0xFF68] & 0x38) >> 3;
+					graphicsChip.gbcBackground[palNumber].setGbcColours(
+					        (JavaBoy.unsign(memory[0xFF68]) & 0x06) >> 1,
+					        (JavaBoy.unsign(memory[0xFF68]) & 0x01) == 1, JavaBoy.unsign((byte) data));
+					graphicsChip.invalidateAll(palNumber * 4);
+	
+					if ((JavaBoy.unsign(memory[0xFF68]) & 0x80) != 0) {
+						memory[0xFF68]++;
+					}
+	
+					memory[0xFF69] = (byte) data;
+					break;
+	
+				case 0xFF6B :           // FF6B - OCPD: GBC Sprite Palette data write
+	
+					int index = (memory[0xFF6A] & 0x38) >> 3;
+					graphicsChip.gbcSprite[index].setGbcColours(
+					        (JavaBoy.unsign(memory[0xFF6A]) & 0x06) >> 1,
+					        (JavaBoy.unsign(memory[0xFF6A]) & 0x01) == 1, JavaBoy.unsign((byte) data));
+					graphicsChip.invalidateAll((index * 4) + 32);
+	
+					if ((JavaBoy.unsign(memory[0xFF6A]) & 0x80) != 0) {
+						if ((memory[0xFF6A] & 0x3F) == 0x3F) {
+							memory[0xFF6A] = (byte) 0x80;
+						} else {
+							memory[0x6A]++;
+						}
+					}
+	
+					memory[0xFF6B] = (byte) data;
+					break;
+	
+				case 0xFF70 :           // FF70 - GBC Work RAM bank
+					if (((data & 0x07) == 0) || ((data & 0x07) == 1)) {
+						gbcRamBank = 1;
+					} else {
+						gbcRamBank = data & 0x07;
+					}
+					memory[0xFF70] = (byte) data;
+					break;
+	
+				default:
+					memory[addr] = (byte) data;
+					break;
+				}
 			}
-			break;
 		}
 	}
 
@@ -245,6 +459,9 @@ class Dmgcpu {
 		e = 0;
 		hl = 0;
 
+		addressWrite(0xFF40, 0x91);
+		addressWrite(0xFF0F, 0x01);
+
 		ioHandler.reset();
 	}
 
@@ -297,10 +514,7 @@ class Dmgcpu {
 			memory[0xFF04]++;
 		}
 		
-		
 		if ((instrCount % INSTRS_PER_HBLANK) == 0) {
-
-
 			// LCY Coincidence
 			// The +1 is due to the LCY register being just about to be incremented
 			int cline = JavaBoy.unsign(memory[0xFF44]) + 1;
