@@ -53,7 +53,6 @@ public class JavaBoy extends java.applet.Applet implements Runnable {
 
 	public void start() {
 		Thread p = new Thread(this);
-		//System.out.println("JavaBoy (tm) Version 0.92 Downgrade by ChaoticGabibo (c) 2005 Neil Millstone (applet)");
 		dmgcpu = new Dmgcpu(this);
 		dmgcpu.graphicsChip.setMagnify();
 		p.start();

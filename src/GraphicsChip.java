@@ -28,29 +28,16 @@ import java.awt.*;
   *  It contains methods for calculating the frame rate. */
 
 abstract class GraphicsChip {
-	/** Tile uses the background palette */
-	static final int TILE_BKG = 0;
+	static final int TILE_BKG = 0;	// Background palette
+	static final int TILE_OBJ1 = 4;	// First sprite palette
+	static final int TILE_OBJ2 = 8;	// Second sprite palette
+	static final int TILE_FLIPX = 1;// Flipped horizontally
+	static final int TILE_FLIPY = 2;// Flipped vertically
 
-	/** Tile uses the first sprite palette */
-	static final int TILE_OBJ1 = 4;
-
-	/** Tile uses the second sprite palette */
-	static final int TILE_OBJ2 = 8;
-
-	/** Tile is flipped horizontally */
-	static final int TILE_FLIPX = 1;
-
-	/** Tile is flipped vertically */
-	static final int TILE_FLIPY = 2;
-
-	/** The background palette */
 	GameboyPalette backgroundPalette;
-
-	/** The first sprite palette */
 	GameboyPalette obj1Palette;
-
-	/** The second sprite palette */
 	GameboyPalette obj2Palette;
+
 	GameboyPalette[] gbcBackground = new GameboyPalette[8];
 	GameboyPalette[] gbcSprite = new GameboyPalette[8];
 
