@@ -92,40 +92,6 @@ class Dmgcpu {
 		applet = a;
 	}
 
-	/*
-	public final short addressRead(int addr) {
-
-		addr = addr & 0xFFFF;
-
-		switch ((addr & 0xF000)) {
-		case 0x0000 :
-		case 0x1000 :
-		case 0x2000 :
-		case 0x3000 :
-		case 0x4000 :
-		case 0x5000 :
-		case 0x6000 :
-		case 0x7000 :
-			return memory[addr];
-
-		case 0x8000 :
-		case 0x9000 :
-			return memory[addr];
-			//return memory[addr + graphicsChip.vidRamStart];
-
-		case 0xC000 :
-		case 0xD000 :
-		case 0xE000 :
-		case 0xF000 :
-			return memory[addr];
-
-		default:
-			return 0xFF;
-		}
-
-	}
-	*/
-
 	/** Performs a CPU address space write.  Maps all of the relevant object into the right parts of
 	 *  memory.
 	 */
@@ -144,7 +110,6 @@ class Dmgcpu {
 
 		case 0x8000 :
 		case 0x9000 :
-				//memory[addr + graphicsChip.vidRamStart] = (byte) data;
 				memory[addr] = (byte) data;
 			break;
 
