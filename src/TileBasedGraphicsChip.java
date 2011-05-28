@@ -47,13 +47,6 @@ class TileBasedGraphicsChip extends GraphicsChip {
 		}
 	}
 
-	/** Flush the tile cache */
-	//public void dispose() {
-	//	for (int r = 0; r < 384 * 2; r++) {
-	//		if (tiles[r] != null) tiles[r].dispose();
-	//	}
-	//}
-
 	/** Invalidates all tiles in the tile cache that have the given attributes.
 	 *  These will be regenerated next time they are drawn.
 	 */

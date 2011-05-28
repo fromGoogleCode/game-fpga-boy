@@ -160,10 +160,7 @@ class Dmgcpu {
 
 		case 0xF000 :
 			if (addr < 0xFE00) {
-				try {
-					memory[addr] = (byte) data;
-				} catch (ArrayIndexOutOfBoundsException e) {
-				}
+				memory[addr] = (byte) data;
 			} else if (addr < 0xFF00) {
 				memory[addr] = (byte) data;
 			} else {
